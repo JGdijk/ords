@@ -1,0 +1,322 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+class Attacher {
+    constructor(pushController) {
+        this.type = 'attach';
+        this.keys = [];
+        this.checked = false;
+        this.pushController = pushController;
+        this.collector = pushController.getCollectorController().getAttachCollector();
+    }
+    run() {
+        if (!this.hasKeys()) {
+            return;
+        }
+        this.processRelations();
+        this.processTarget();
+        let data = null;
+        if (this.checked) {
+            if (this.pushController.getInstanceData().getOrderByStatementController().has()) {
+                data = this.pushController.getInstanceData().getOrderByStatementController().order(this.pushController.getData());
+            }
+            else {
+                data = this.pushController.getInstanceData().getOrderByStatementController().orderDefault(this.pushController.getData());
+            }
+            this.pushController.setData(data);
+        }
+    }
+    processTarget() {
+        if (!this.pushController.getInstanceData().getWhereStatementController().hasWhereHas() &&
+            !this.pushController.getInstanceData().getWhereStatementController().hasWhereDoesntHave()) {
+            return;
+        }
+        const has_where_has = this.checkWhereHasByKeys(this.pushController.getInstanceData().getWhereStatementController());
+        const has_where_doesnt_have = this.checkWhereDoesntHaveByKeys(this.pushController.getInstanceData().getWhereStatementController());
+        // If non of the complicated Where has or where doesn't have statement have any of the keys we can return.
+        if (!has_where_has && !has_where_doesnt_have) {
+            return;
+        }
+        // We will check if we now have to EXCLUDE data according to the changed relations.
+        if (has_where_doesnt_have) {
+            let data = this.pushController.getData();
+            let filtered_data = this.pushController.getInstanceData().getWhereStatementController().filter(data);
+            if (filtered_data.length !== data.length) {
+                this.checked = true;
+                this.pushController.setChecked();
+                this.pushController.setData(filtered_data);
+            }
+        }
+        // We will check if we have to now INCLUDE any of the changed data.
+        if (has_where_has) {
+            let checked;
+            let all_objects = this.pushController.getInstanceData().getObject().get();
+            all_objects = this.pushController.getInstanceData().getWhereStatementController().filter(all_objects);
+            if (!all_objects.length) {
+                return;
+            }
+            let data = this.pushController.getData();
+            // If all the array of objects is the same length as it should be we can return.
+            if (data.length === all_objects.length) {
+                return;
+            }
+            const pk = this.pushController.getInstanceData().getObject().getPrimaryKey();
+            newLoop: for (const new_object of all_objects) {
+                for (const old_object of data) {
+                    if (new_object[pk] === old_object[pk]) {
+                        continue newLoop;
+                    }
+                }
+                checked = true;
+                let new_model = this.pushController.getInstanceData().getObject().createModel(new_object);
+                if (this.pushController.getInstanceData().getJoinStatementController().has()) {
+                    const statements = this.pushController.getInstanceData().getJoinStatementController().getStatements();
+                    for (const statement of statements) {
+                        statement.attach(new_model);
+                    }
+                }
+                data.push(new_model);
+            }
+            if (checked) {
+                this.checked = true;
+                this.pushController.setChecked();
+                this.pushController.setData(data);
+            }
+        }
+    }
+    processRelations() {
+        if (!this.pushController.getInstanceData().getJoinStatementController().has()) {
+            return;
+        }
+        const statements = this.pushController.getInstanceData().getJoinStatementController().getStatements();
+        let data = this.pushController.getData();
+        let checked = false;
+        let new_array = [];
+        for (const statement of statements) {
+            for (let object of data) {
+                // If a relation doesn't contain any of the collector keys in either the joinStatement or whereStatement
+                // we can continue;
+                if (!this.relationHasKeys(statement)) {
+                    continue;
+                }
+                const new_relation_data = this.checkRelationData(object, statement);
+                if (new_relation_data !== false) {
+                    let new_model = statement.getRelation().getLocalObject().createModel(object);
+                    new_model[statement.getRelation().getObjectName()] = new_relation_data;
+                    new_array.push(new_model);
+                    checked = true;
+                }
+                else {
+                    new_array.push(object);
+                }
+            }
+        }
+        if (checked) {
+            this.checked = true;
+            this.pushController.setChecked();
+            this.pushController.setData(new_array);
+        }
+    }
+    checkRelationData(object, statement) {
+        return (object === null || !Array.isArray(object[statement.getRelation().getObjectName()]))
+            ? this.checkRelationDataObject(object, statement)
+            : this.checkRelationDataArray(object, statement);
+    }
+    checkRelationDataArray(object, statement) {
+        let checked = false;
+        let new_array = [];
+        const has_where_has = (!statement.hasWhereStatements()) ? false :
+            (this.checkWhereHasByKeys(statement.getWhereStatementController()));
+        const has_where_doesnt_have = (!statement.hasWhereStatements()) ? false :
+            (this.checkWhereDoesntHaveByKeys(statement.getWhereStatementController()));
+        for (let relationObject of object[statement.getRelation().getObjectName()]) {
+            // We check if the object should now be EXCLUDED.
+            if (has_where_doesnt_have) {
+                if (!statement.getWhereStatementController().check(relationObject)) {
+                    checked = true;
+                    continue;
+                }
+            }
+            let new_model = null;
+            // We check the nested relations.
+            if (statement.hasStatements()) {
+                const relationStatements = statement.getStatements();
+                for (const relationStatement of relationStatements) {
+                    // If a relation doesn't contain any of the collector keys in either the joinStatement or
+                    // whereStatement we can continue.
+                    if (!this.relationHasKeys(relationStatement)) {
+                        continue;
+                    }
+                    const new_relation_data = this.checkRelationData(relationObject, relationStatement);
+                    if (new_relation_data !== false) {
+                        if (!new_model) {
+                            new_model = relationStatement.getRelation().getLocalObject().createModel(relationObject);
+                        }
+                        new_model[relationStatement.getRelation().getObjectName()] = new_relation_data;
+                    }
+                }
+            }
+            if (new_model) {
+                checked = true;
+                new_array.push(new_model);
+            }
+            else {
+                new_array.push(relationObject);
+            }
+        }
+        // Now we can check if the collector has relationObjects for us to attach to this object.
+        const local_pk = statement.getRelation().getLocalObject().getPrimaryKey();
+        const relation_ids_to_attach = this.collector.find(statement.getRelation().getLocalObject().getModelName(), object[local_pk], statement.getRelation().getModelName());
+        if (relation_ids_to_attach.length) {
+            let new_relation_objects = statement.getRelation().getRelationObject().find(relation_ids_to_attach);
+            if (statement.hasWhereStatements()) {
+                new_relation_objects = statement.getWhereStatementController().filter(new_relation_objects);
+            }
+            if (new_relation_objects.length) {
+                checked = true;
+                for (const new_relation_object_orignal of new_relation_objects) {
+                    let new_model = statement.getRelation().getRelationObject().createModel(new_relation_object_orignal);
+                    if (statement.hasStatements()) {
+                        // todo make it that statement can return joinStatementController
+                        for (const nestedStatement of statement.getStatements()) {
+                            nestedStatement.attach(new_model);
+                        }
+                    }
+                    new_array.push(new_model);
+                }
+            }
+        }
+        // We also have to check if the relation has a where has statement that might now INCLUDE relations that
+        // were not in the array before.
+        if (has_where_has) {
+            const all_relations = statement.getRelation().findByObject(object);
+            const filtered_all_relations = statement.getWhereStatementController().filter(all_relations);
+            // if both arrays have the same length we are done
+            if (filtered_all_relations.length !== new_array.length) {
+                const pk = statement.getRelation().getRelationObject().getPrimaryKey();
+                relationLoop: for (const relation of filtered_all_relations) {
+                    for (const included_object of new_array) {
+                        if (relation[pk] !== included_object[pk]) {
+                            continue relationLoop;
+                        }
+                        checked = true;
+                        let new_model = statement.getRelation().getRelationObject().createModel(relation);
+                        if (statement.hasStatements()) {
+                            // todo make it that statement can return joinStatementController
+                            for (const nestedStatement of statement.getStatements()) {
+                                nestedStatement.attach(new_model);
+                            }
+                        }
+                        new_array.push(new_model);
+                    }
+                }
+            }
+        }
+        return (checked)
+            ? new_array
+            : false;
+    }
+    checkRelationDataObject(object, statement) {
+        let relationObject = object[statement.getRelation().getObjectName()];
+        if (relationObject) {
+            // We check if the object should now be EXCLUDED according to a where doesn't have statement.
+            if (statement.hasWhereStatements() && this.checkWhereDoesntHaveByKeys(statement.getWhereStatementController())) {
+                if (!statement.getWhereStatementController().check(relationObject)) {
+                    return null;
+                }
+            }
+            // We check the nested relations.
+            if (statement.hasStatements()) {
+                let new_model = null;
+                const relationStatements = statement.getStatements();
+                for (const relationStatement of relationStatements) {
+                    // If a relation doesn't contain any of the collector keys in either the joinStatement or
+                    // whereStatement we can continue.
+                    if (!this.relationHasKeys(relationStatement)) {
+                        continue;
+                    }
+                    const new_relation_data = this.checkRelationData(relationObject, relationStatement);
+                    if (new_relation_data !== false) {
+                        if (!new_model) {
+                            new_model = relationStatement.getRelation().getLocalObject().createModel(relationObject);
+                        }
+                        new_model[relationStatement.getRelation().getObjectName()] = new_relation_data;
+                    }
+                }
+                if (new_model) {
+                    return new_model;
+                }
+            }
+        }
+        if (!relationObject) {
+            const local_pk = statement.getRelation().getLocalObject().getPrimaryKey();
+            // We check if the collector has ids for this object.
+            const ids_to_attach = this.collector.find(statement.getRelation().getLocalObject().getModelName(), object[local_pk], statement.getRelation().getRelationObject().getModelName());
+            if (ids_to_attach.length) {
+                let objects_to_attach = statement.getRelation().getRelationObject().find(ids_to_attach);
+                if (statement.hasWhereStatements()) {
+                    objects_to_attach = statement.getWhereStatementController().filter(objects_to_attach);
+                }
+                if (objects_to_attach.length) {
+                    let new_model = statement.getRelation().getRelationObject().createModel(objects_to_attach[0]);
+                    if (statement.hasStatements()) {
+                        const nested_statemetns = statement.getStatements();
+                        for (const nested_statement of nested_statemetns) {
+                            nested_statement.attach(new_model);
+                        }
+                    }
+                    return new_model;
+                }
+            }
+            // we check if there was a nested where has statement that might now INCLUDE a relation
+            if (statement.hasWhereStatements() && this.checkWhereHasByKeys(statement.getWhereStatementController())) {
+                let all_relation_objects = statement.getRelation().findByObject(object);
+                if (all_relation_objects) {
+                    if (statement.getWhereStatementController().check(all_relation_objects)) {
+                        let new_model = statement.getRelation().getRelationObject().createModel(all_relation_objects);
+                        if (statement.hasStatements()) {
+                            const nested_statements = statement.getStatements();
+                            for (const nested_statement of nested_statements) {
+                                nested_statement.attach(new_model);
+                            }
+                        }
+                        return new_model;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    relationHasKeys(statement) {
+        for (const key of this.collector.keys()) {
+            if (statement.has(key)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    hasKeys() {
+        for (const key of this.collector.keys()) {
+            if (this.pushController.getInstanceData().has(key)) {
+                this.keys.push(key);
+            }
+        }
+        return !!(this.keys.length);
+    }
+    checkWhereHasByKeys(controller) {
+        for (const key of this.keys) {
+            if (controller.hasWhereHas(key)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    checkWhereDoesntHaveByKeys(controller) {
+        for (const key of this.keys) {
+            if (controller.hasWhereDoesntHave(key)) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+exports.Attacher = Attacher;
