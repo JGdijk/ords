@@ -28,7 +28,6 @@ export class Adder {
         this.processTarget();
 
         let data = null;
-
         if (this.checked) {
             if (this.pushController.getInstanceData().getOrderByStatementController().has()) {
                 data = this.pushController.getInstanceData().getOrderByStatementController().order(this.pushController.getData());

@@ -113,7 +113,7 @@ export class RdsObject {
 
         // if there are no relations we can simply add the objects
         if (this.getRelationContainer().isEmpty()) {
-            collector.add(this.getPrettyName(), objects);
+            collector.add(this.getModelName(), objects);
             return this.data.add(objects);
         }
 
