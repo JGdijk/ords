@@ -1,14 +1,17 @@
 import {ObjectContainer} from "./object/object-container";
-import {modelDecoratorBag} from "./model/decorators/bag/model-decorator-bag";
-import {RdsObject} from "./object/object";
 import {Observable} from "rxjs/index";
 import {publish} from "rxjs/operators";
 import {Collector} from "./instance/collector/collector";
 import {rdsContainer} from "./rds-container";
+import {RelationConfig} from "./object/relation/relation";
 
 export type ModelConfig = {
     name: string,
-    model: any
+    model: any,
+    primaryKey?: string,
+    relations?: RelationConfig[], // todo type
+    dates?: any[], // todo type
+    stringify?: any[] // todo type
 }
 
 export class Rds {

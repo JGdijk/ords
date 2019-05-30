@@ -206,21 +206,56 @@ export class Instance implements InstanceInterface {
     /*************************** direct actions ***************************
      ******************************************************************/
 
-    public update(data: any): void {
+    public update(data: any, ids_in?: number | string | number[] | string[]): void {
+
+        let ids = null;
+        if (ids_in) {
+            if (!Array.isArray(ids_in)) {
+                ids = [ids_in];
+            } else {
+                ids = ids_in;
+            }
+        }
 
         let objects: any[] = this.object.get();
 
         objects = this.dataController.getInstanceData().getWhereStatementController().filter(objects);
-        let ids: number[] = [];
+        let object_ids: number[] = [];
+
         for (const object of objects) {
-            ids.push(object[this.object.getPrimaryKey()]);
+            if (ids && ids.length) {
+                if (!ids.includes(object[this.object.getPrimaryKey()])) { continue; }
+            }
+            object_ids.push(object[this.object.getPrimaryKey()]);
         }
 
-        this.rds.update(this.object.getModelName(), ids, data);
+        this.rds.update(this.object.getModelName(), object_ids, data);
     }
 
-    public remove(ids: number | string | number[] | string): void {
-        this.rds.remove(this.object.getModelName(), ids);
+    public remove(ids_in?: number | string | number[] | string): void {
+
+        let ids = null;
+        if (ids_in) {
+            if (!Array.isArray(ids_in)) {
+                ids = [ids_in];
+            } else {
+                ids = ids_in;
+            }
+        }
+
+        let objects: any[] = this.object.get();
+
+        objects = this.dataController.getInstanceData().getWhereStatementController().filter(objects);
+        let object_ids: number[] = [];
+
+        for (const object of objects) {
+            if (ids && ids.length) {
+                if (!ids.includes(object[this.object.getPrimaryKey()])) { continue; }
+            }
+            object_ids.push(object[this.object.getPrimaryKey()]);
+        }
+
+        this.rds.remove(this.object.getModelName(), object_ids);
     }
 
     public attach(relation_name: string,

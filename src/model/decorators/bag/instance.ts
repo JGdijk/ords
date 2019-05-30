@@ -19,6 +19,10 @@ export class Instance {
         this.relations = [];
     }
 
+    public hasPrimaryKey(): boolean {
+        return !!(this.primary_key);
+    }
+
     public setPrimaryKey(primary_key: string): void {
         this.primary_key = primary_key;
     }

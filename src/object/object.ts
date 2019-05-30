@@ -4,7 +4,7 @@ import {modelDecoratorBag} from "../model/decorators/bag/model-decorator-bag";
 import {ObjectData} from "./object-data";
 import {InstanceController} from "../instance/instance-controller";
 import {Collector} from "../instance/collector/collector";
-
+import {Instance} from "../model/decorators/bag/instance";
 export class RdsObject {
 
     private pretty_name: string;
@@ -27,6 +27,8 @@ export class RdsObject {
 
     private rds: Rds;
 
+    private config: ModelConfig;
+
     constructor(config: ModelConfig, rds: Rds) {
         this.rds = rds;
 
@@ -34,40 +36,40 @@ export class RdsObject {
 
         this.pretty_name = config.name.toLowerCase();
 
-
         // const funcNameRegex = /function (.{1,})\(/;
         // this.model_name = (funcNameRegex).exec(config.model.prototype.constructor.toString())[1].toLowerCase();
         this.model_name = config.model.name;
 
+        // todo check this.
         const parent = Object.getPrototypeOf(config.model.prototype);
         // console.log(parent.name);
         // this.parent = (funcNameRegex).exec(parent.constructor.toString())[1].toLowerCase();
 
         this.model_constructor = config.model;
+
+        this.config = config;
     }
 
     init(): void {
-        // todo check if this is still working
-        this.dates = [];
-        this.immutables = [];
-        this.primary_key = 'id';
-        this.data = new ObjectData(this.primary_key);
-
-        // todo until here much changed
-
-        if (!modelDecoratorBag.has(this.getModelName())) { return; }
-        const bag = modelDecoratorBag.get(this.getModelName());
-
-        this.setPrimaryKey(bag.getPrimaryKey());
-
-        this.dates = bag.getDates();
-        this.immutables = bag.getStringifyObjects();
-
-        for (const config of bag.getRelations()) {
-            if (!this.rds.getObjectContainer().hasPretty(config.model_name)) { continue; }
-
-            this.relationContainer.add(config, this.getModelName(), this.rds);
+        let bag = null;
+        if (modelDecoratorBag.has(this.getModelName())) {
+            bag = modelDecoratorBag.get(this.getModelName());
         }
+
+        // primary key
+        this.setPrimaryKey(bag);
+
+        // relations
+        this.setRelations(bag);
+
+        // dates
+        this.setDates(bag);
+
+        // immutables
+        this.setImmutables(bag);
+
+        // data
+        this.data = new ObjectData(this.primary_key);
     }
 
     // data functions
@@ -216,9 +218,86 @@ export class RdsObject {
         return new this.model_constructor(object);
     }
 
-    private setPrimaryKey(primary_key ?: string): void {
-        this.primary_key = (primary_key)
-            ? primary_key
-            : 'id';
+    private setPrimaryKey(instance: Instance | null): void {
+        this.primary_key = 'id';
+
+        if (this.config.primaryKey) {
+            this.primary_key = this.config.primaryKey;
+            return;
+        }
+
+        if (instance !== null && instance.hasPrimaryKey()) {
+            this.primary_key = instance.getPrimaryKey();
+        }
+    }
+
+    private setRelations(instance: Instance | null): void {
+
+        // first we add all the relations that were provided in the config object.
+        if (this.config.relations && this.config.relations.length) {
+            for (const config of this.config.relations) {
+
+                // we check if the relation model is defined
+                if (!this.rds.getObjectContainer().hasPretty(config.model_name)) {
+                    // todo throw error, model not found.
+                    continue;
+                }
+
+                // add the relation
+                this.relationContainer.add(config, this.getModelName(), this.rds);
+            }
+        }
+
+
+        // second we check if any relations where defined via decorators.
+        if (instance) {
+            for (const config of instance.getRelations()) {
+
+                // we check if the relation model is defined
+                if (!this.rds.getObjectContainer().hasPretty(config.model_name)) {
+                    // todo throw error, model not found.
+                    continue;
+                }
+
+                // if the relation was already defined by the config object, we will skip it.
+                if (this.relationContainer.hasByModelName(config.model_name)) {
+                    continue;
+                }
+
+                this.relationContainer.add(config, this.getModelName(), this.rds);
+            }
+        }
+    }
+
+    private setDates(instance: Instance): void {
+        this.dates = [];
+
+        if (this.config.dates && this.config.dates.length) {
+            this.dates = this.config.dates;
+        }
+
+        if (instance) {
+            for (const date of instance.getDates()) {
+                if (!this.dates.includes(date)) {
+                    this.dates.push(date);
+                }
+            }
+        }
+    }
+
+    private setImmutables(instance: Instance): void {
+        this.immutables = [];
+
+        if (this.config.stringify && this.config.stringify.length) {
+            this.immutables = this.config.stringify;
+        }
+
+        if (instance) {
+            for (const property_name of instance.getStringifyObjects()) {
+                if (!this.dates.includes(property_name)) {
+                    this.dates.push(property_name);
+                }
+            }
+        }
     }
 }

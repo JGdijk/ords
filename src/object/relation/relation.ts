@@ -5,7 +5,7 @@ import {Collector} from "../../instance/collector/collector";
 export type RelationConfig = {
     name: string;
     model_name: string;
-    type: string;
+    type: string; // todo make enum
     returns_many: boolean;
 }
 

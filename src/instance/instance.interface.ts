@@ -23,7 +23,7 @@ export interface InstanceInterface {
 
     with(name: string | string[], joinCallback?: JoinCallback): Instance;
 
-    update(data: any): void;
-    remove(ids: number | string | number[] | string[]): void;
+    update(data: any, ids?: number | string |number[] | string[]): void;
+    remove(ids?: number | string | number[] | string[]): void;
 
 }

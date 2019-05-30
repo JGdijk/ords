@@ -134,11 +134,11 @@ export class InstanceController implements InstanceInterface {
         this.rds.add(this.object.getModelName(), objects);
     }
 
-    public update(data: any): void {
-        this.getInstance().update(data);
+    public update(data: any, ids ?: number | string | number[] | string[]): void {
+        this.getInstance().update(data, ids);
     }
 
-    public remove(ids: number | string | number[] | string): void {
+    public remove(ids?: number | string | number[] | string): void {
         this.getInstance().remove(ids);
     }
 
