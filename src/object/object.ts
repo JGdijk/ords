@@ -248,13 +248,13 @@ export class RdsObject {
             }
         }
 
-
         // second we check if any relations where defined via decorators.
         if (instance) {
+
             for (const config of instance.getRelations()) {
 
                 // we check if the relation model is defined
-                if (!this.rds.getObjectContainer().hasPretty(config.model_name)) {
+                if (!this.rds.getObjectContainer().has(config.model_name)) {
                     // todo throw error, model not found.
                     continue;
                 }

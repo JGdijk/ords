@@ -235,12 +235,23 @@ export class Instance implements InstanceInterface {
     public remove(ids_in?: number | string | number[] | string): void {
 
         let ids = null;
+
         if (ids_in) {
             if (!Array.isArray(ids_in)) {
                 ids = [ids_in];
             } else {
                 ids = ids_in;
             }
+        }
+
+        // todo if where statement controller doesn't have anything
+
+        if (!this.dataController.getInstanceData().getWhereStatementController().has()) {
+            if (!ids) {
+                // throw error
+                return;
+            }
+            this.rds.remove(this.object.getModelName(), ids);
         }
 
         let objects: any[] = this.object.get();
@@ -258,14 +269,15 @@ export class Instance implements InstanceInterface {
         this.rds.remove(this.object.getModelName(), object_ids);
     }
 
-    public attach(relation_name: string,
+    public attach(ids: number | string | number[] | string[],
+                  relation_name: string,
                   relation_ids: number | string | number[] | string[]): void {
 
         const relation_ids_array: any = (Array.isArray(relation_ids))
             ? relation_ids
             : [relation_ids];
 
-        const object_ids_array = this.getIdsStatic();
+        const object_ids_array: any[] = (Array.isArray(ids)) ? ids : [ids];
 
         this.rds.attach(this.object.getModelName(), relation_name, object_ids_array, relation_ids_array);
     }

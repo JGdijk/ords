@@ -3,14 +3,14 @@ import {RelationConfig} from "../../../object/relation/relation";
 
 
 type HasManyConfig = {
-    model: string; //todo name guessing
+    model: any;
 }
 
 export function HasMany(config: HasManyConfig) {
     return function (target: any, key: string) {
         const relationConfig: RelationConfig = {
             name: key,
-            model_name: config.model.toLowerCase(), //todo name guessing
+            model_name: config.model.name, //todo name guessing
             type: 'hasMany',
             returns_many: true
         };

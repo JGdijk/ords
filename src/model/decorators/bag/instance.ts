@@ -2,7 +2,7 @@ import {RelationConfig} from "../../../object/relation/relation";
 
 export class Instance {
 
-    name: string; // dirty name
+    public name: string;
 
     private primary_key: string;
 
@@ -13,7 +13,7 @@ export class Instance {
     private relations: RelationConfig[];
 
     constructor(name: string) {
-        this.name = name.toLowerCase();
+        this.name = name;
         this.dates = [];
         this.stringify_objects = [];
         this.relations = [];

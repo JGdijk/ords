@@ -29,25 +29,25 @@ class ModelDecoratorBag {
     }
 
     public setPrimaryKey(target: string, primary_key: string): void {
-        target = target.toLowerCase();
+        target = target;
         if (!this.has(target)) { this.add(target); }
         this.get(target).setPrimaryKey(primary_key);
     }
 
     public addDate(target: string, key: string): void {
-        target = target.toLowerCase();
+        target = target;
         if (!this.has(target)) { this.add(target); }
         this.get(target).addDate(key);
     }
 
     public addStringifyObject(target: string, key: string): void {
-        target = target.toLowerCase();
+        target = target;
         if (!this.has(target)) { this.add(target); }
         this.get(target).addStringifyObject(key);
     }
 
     public addRelation(target: string, config: RelationConfig): void {
-        target = target.toLowerCase();
+        target = target;
         if (!this.has(target)) { this.add(target); }
         this.get(target).addRelation(config);
     }

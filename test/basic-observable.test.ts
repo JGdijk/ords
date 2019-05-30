@@ -92,10 +92,10 @@ test('simple-add-observable', done => {
     projectOrds.whereBetween('id', 2, 3).update({name: 'similar_name'});
 
     step = 5;
-    projectOrds.remove(1); // todo change remove to query + add removeIds()
+    projectOrds.remove(1);
 
     step = 6;
-    projectOrds.remove([2,3,4]); // todo change remove to query + add removeIds()
+    projectOrds.remove([2,3,4]);
 
     done();
     subscription.unsubscribe();
