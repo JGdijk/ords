@@ -14,7 +14,7 @@ projectOrds.add([
 ]);
 
 // counting the amount of objects.
-test('count', done => {
+test('get', done => {
    let subscription = projectOrds.get().subscribe((projects) => {
       expect(projects.length).toBe(3);
       done();
@@ -23,7 +23,7 @@ test('count', done => {
 });
 
 // counting the amount of projects when fetched statically.
-test('static-count', () => {
+test('static-get', () => {
    expect(projectOrds.getStatic().length).toBe(3);
 });
 

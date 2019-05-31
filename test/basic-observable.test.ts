@@ -17,6 +17,7 @@ projectOrds.add([
 test('simple-add-observable', done => {
 
     let step = 0;
+
     let subscription = projectOrds.get().subscribe((projects) => {
 
         switch(step) {

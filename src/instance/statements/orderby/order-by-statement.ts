@@ -4,12 +4,13 @@ export class OrderByStatement {
 
     private ord: string;
 
-    constructor(key: string, order: string) {
+    constructor(key: string, order?: string) {
         this.key = key;
-        this.ord = order.toLowerCase();
+        this.ord = (order) ? order.toLowerCase() : 'asc';
     }
 
     public order(data: any[]): any[] {
+
         // todo we have to throw a big error when the key of the order doesn't exist on the object
         if (this.ord !== 'desc' && this.ord !== 'asc') return; // todo trow big error
         let desc = (this.ord === 'desc');
@@ -28,8 +29,8 @@ export class OrderByStatement {
             const b = (obj2[this.key]) ? obj2[this.key] : '';
 
             return (desc)
-                ? a.localeCompare(b)
-                : b.localeCompare(a);
+                ? b.localeCompare(a)
+                : a.localeCompare(b);
         });
     }
 

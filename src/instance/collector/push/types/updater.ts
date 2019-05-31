@@ -25,6 +25,7 @@ export class Updater {
     }
 
     public run() {
+
         if (!this.hasKeys()) { return; }
 
         this.processTarget();
@@ -51,23 +52,18 @@ export class Updater {
         // We filter out the updated data according the the where statements.
         // todo check for ids?
         let updated_data = this.collector.find(key);
-        if (this.pushController.getInstanceData().getWhereStatementController().has(key)) {
-            const new_updated_data = this.pushController.getInstanceData().getWhereStatementController().filter(updated_data);
-            if (updated_data.length !== new_updated_data.length) { checked = true; }
-            updated_data = new_updated_data;
-        }
+        // todo this used to check for key, probably not needed. Maybe we can check if it only has complex where
+        // todo statements then check for key.
+        // if (this.pushController.getInstanceData().getWhereStatementController().has(key)) {
 
+        // if (this.pushController.getInstanceData().getWhereStatementController().has()) {
+        //     const new_updated_data = this.pushController.getInstanceData().getWhereStatementController().filter(updated_data);
+        //     if (updated_data.length !== new_updated_data.length) { checked = true; }
+        //     updated_data = new_updated_data;
+        // }
 
         // We filter out the original data according to the where statements.
         let old_data = this.pushController.getData();
-
-        // todo remove this we only check on the target key, but we don't know if there are nested where has statements
-        // todo so we have to check if the wereController has any key that is presented in the collector.
-        // if (this.pushController.getInstanceData().getWhereStatementController().has(key)) {
-            const new_old_data = this.pushController.getInstanceData().getWhereStatementController().filter(old_data);
-            if (old_data.length !== new_old_data.length) { checked = true; }
-            old_data = new_old_data;
-        // }
 
         const pk = this.pushController.getInstanceData().getObject().getPrimaryKey();
 
@@ -76,6 +72,7 @@ export class Updater {
         // We loop over the updated objects, if they are present we update them, if not we add them.
         updateLoop: for (const updated_object of updated_data) {
             for (const old_object of old_data) {
+
                 if (old_object[pk] !== updated_object[pk]) { continue; }
 
                 // We know that the updated object passed the whereCheck, we know the object can stay in the
@@ -95,6 +92,8 @@ export class Updater {
 
             objects_to_push.push(new_model);
         }
+console.log(objects_to_push);
+        console.log(old_data);
 
         // We have to include all the original objects that haven't been updated.
         oldLoop: for (const old_object of old_data) {
@@ -103,6 +102,20 @@ export class Updater {
             }
             objects_to_push.push(old_object);
         }
+
+        // todo remove this we only check on the target key, but we don't know if there are nested where has statements
+        // todo so we have to check if the wereController has any key that is presented in the collector.
+        // if (this.pushController.getInstanceData().getWhereStatementController().has(key)) {
+        const new_objects_to_push = this.pushController.getInstanceData().getWhereStatementController().filter(objects_to_push);
+        console.log();
+        if (objects_to_push.length !== new_objects_to_push.length) { checked = true; console.log('hiero'); }
+        objects_to_push = new_objects_to_push;
+
+        // }
+
+
+
+        console.log(objects_to_push);
 
         // There might be objects with complicated whereHas or whereDoesntHave statements that will now be INCLUDED.
         if (this.pushController.getInstanceData().getWhereStatementController().has() &&

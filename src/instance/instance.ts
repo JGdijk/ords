@@ -220,6 +220,7 @@ export class Instance implements InstanceInterface {
         let objects: any[] = this.object.get();
 
         objects = this.dataController.getInstanceData().getWhereStatementController().filter(objects);
+
         let object_ids: number[] = [];
 
         for (const object of objects) {
