@@ -16,7 +16,7 @@ export class JoinStatement implements JoinStatementInterface {
     }
 
     has(key: string): boolean {
-        return !!(key === this.relation.getModelName());
+        return (key === this.relation.getModelName());
     }
 
     getRelation(): Relation {

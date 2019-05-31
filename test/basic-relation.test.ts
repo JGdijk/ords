@@ -29,9 +29,12 @@ taskOrds.add([
 test('simple-relation-observable', done => {
 
     let step = 0;
+    let steps_taken = 0;
+
     let subscription = projectOrds.with('tasks').get().subscribe((projects) => {
         switch(step) {
             case 0:
+                steps_taken ++;
                 expect(projects.length).toBe(3);
                 expect(projects[0].tasks.length).toBe(4);
                 expect(projects[0].tasks).toMatchObject([
@@ -42,6 +45,7 @@ test('simple-relation-observable', done => {
                 ]);
                 break;
             case 1:
+                steps_taken ++;
                 expect(projects.length).toBe(3);
                 expect(projects[0].tasks.length).toBe(3);
                 expect(projects[0].tasks).toMatchObject([
@@ -51,10 +55,15 @@ test('simple-relation-observable', done => {
                 ]);
                 break;
             case 2:
-                console.log('oi');
+                steps_taken ++;
                 expect(projects.length).toBe(3);
                 expect(projects[0].tasks.length).toBe(4);
-                expect(projects[0].tasks[3]).toMatchObject({task_id: 5, name: 'task-7'});
+                expect(projects[0].tasks[3]).toMatchObject({task_id: 5, name: 'task-5'});
+                break;
+            case 3:
+                steps_taken ++;
+                expect(projects.length).toBe(3);
+                expect(projects[0].tasks.length).toBe(2);
                 break;
         }
     });
@@ -63,11 +72,12 @@ test('simple-relation-observable', done => {
     taskOrds.remove(2);
 
     step = 2;
-    projectOrds.attach(1,'tasks', 5);
+    projectOrds.attach(5,'tasks', 1);
 
-    // step = 3;
-    // taskOrds.remove(2);
+    step = 3;
+    projectOrds.detach([3,4], 'tasks', 1);
 
+    expect(steps_taken).toBe(4);
     done();
     subscription.unsubscribe();
 

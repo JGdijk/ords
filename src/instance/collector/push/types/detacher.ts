@@ -127,10 +127,9 @@ export class Detacher {
 
                 // If a relation doesn't contain any of the collector keys in either the joinStatement or whereStatement
                 // we can continue;
-                if (!this.relationHasKeys(statement)) { continue; }
+                // if (!this.relationHasKeys(statement)) { continue; } // todo this isn't working, we need to check for both object name as relation name, not only relation name.
 
-                const new_relation_data =
-                    this.checkRelationData(object, statement);
+                const new_relation_data = this.checkRelationData(object, statement);
                 if (new_relation_data !== false) {
                     let new_model = statement.getRelation().getLocalObject().createModel(object);
                     new_model[statement.getRelation().getObjectName()] = new_relation_data;
@@ -209,7 +208,7 @@ export class Detacher {
 
                     // If a relation doesn't contain any of the collector keys in either the joinStatement or
                     // whereStatement we can continue.
-                    if (!this.relationHasKeys(relationStatement)) { continue; }
+                    // if (!this.relationHasKeys(relationStatement)) { continue; } // todo this isn't working, we need to check for both object name as relation name, not only relation name.
 
                     const new_relation_data =
                         this.checkRelationData(relationObject, relationStatement);
@@ -293,7 +292,7 @@ export class Detacher {
 
                     // If a relation doesn't contain any of the collector keys in either the joinStatement or
                     // whereStatement we can continue.
-                    if (!this.relationHasKeys(relationStatement)) { continue; }
+                    // if (!this.relationHasKeys(relationStatement)) { continue; } // todo this isn't working, we need to check for both object name as relation name, not only relation name.
 
                     const new_relation_data =
                         this.checkRelationData(relationObject, relationStatement);
