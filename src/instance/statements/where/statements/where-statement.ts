@@ -19,14 +19,22 @@ export class WhereStatement implements WhereStatementInterface {
         if (!object.hasOwnProperty(this.key)) { return false; }
 
         switch (this.action) {
-            case '=':
+            case '===':
                 return (object[this.key] === this.value);
-            case '!=':
+            case '!==':
                 return (object[this.key] !== this.value);
+            case '==':
+                return (object[this.key] == this.value);
+            case '!=':
+                return (object[this.key] != this.value);
             case '>':
                 return (object[this.key] > this.value);
             case '<':
                 return (object[this.key] < this.value);
+            case '>=':
+                return (object[this.key] >= this.value);
+            case '<=':
+                return (object[this.key] <= this.value);
             default:
                 return false;
         }

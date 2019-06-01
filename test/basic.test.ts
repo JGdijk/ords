@@ -49,7 +49,7 @@ test('single-remove', done => {
 
 // updating an object before initiating.
 test('single-update', done => {
-   projectOrds.where('id', '=', 1).update({name: 'update-test'});
+   projectOrds.where('id', '===', 1).update({name: 'update-test'});
    let subscription = projectOrds.get().subscribe((projects) => {
       expect(projects[0].name).toBe('update-test');
       done();

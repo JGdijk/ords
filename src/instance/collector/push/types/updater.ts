@@ -45,79 +45,84 @@ export class Updater {
         }
     }
 
+    // 1. Get the updated objects
+    // 2. Get the original data
+    // 3. If an updated object was in the original data, check if it still passes the where statements and replace it
+    // if it does, if it doesn't anymore we exclude it.
+    // 4. If an updated object wasn't in the original data, we now check if it will pass the where statements according
+    // to its updated values.
+    // 5. We include all the original objects that haven't been updated and shouldn't be excluded
+    // 6. There might be objects with complicated whereHas or whereDoesntHave statements that will now be INCLUDED.
     private processTarget(): void {
         const key = this.pushController.getInstanceData().getObject().getModelName();
         let checked = false;
 
-        // We filter out the updated data according the the where statements.
-        // todo check for ids?
+        // 1. Get the updated objects
         let updated_data = this.collector.find(key);
-        // todo this used to check for key, probably not needed. Maybe we can check if it only has complex where
-        // todo statements then check for key.
-        // if (this.pushController.getInstanceData().getWhereStatementController().has(key)) {
 
-        // if (this.pushController.getInstanceData().getWhereStatementController().has()) {
-        //     const new_updated_data = this.pushController.getInstanceData().getWhereStatementController().filter(updated_data);
-        //     if (updated_data.length !== new_updated_data.length) { checked = true; }
-        //     updated_data = new_updated_data;
-        // }
-
-        // We filter out the original data according to the where statements.
+        // 2. Get the original data
         let old_data = this.pushController.getData();
 
         const pk = this.pushController.getInstanceData().getObject().getPrimaryKey();
-
         let objects_to_push = [];
+        // we have to keep track of what items can now be skipped over.
+        let ids_to_ignore = [];
 
-        // We loop over the updated objects, if they are present we update them, if not we add them.
+        // We loop over the updated objects, if they are present we update or exclude them, if not we add them if they
+        // pass the where statements.
         updateLoop: for (const updated_object of updated_data) {
             for (const old_object of old_data) {
 
                 if (old_object[pk] !== updated_object[pk]) { continue; }
 
-                // We know that the updated object passed the whereCheck, we know the object can stay in the
-                // array.
-                let new_object = Object.assign(this.pushController.getInstanceData().getObject().createModel(), old_object);
-                objects_to_push.push(Object.assign(new_object, updated_object));
-                checked = true;
+                // 3. If an updated object was in the original data, check if it still passes the where statements and
+                // replace it if it does, if it doesn't anymore we exclude it.
+                if (this.pushController.getInstanceData().getWhereStatementController().has() &&
+                    !this.pushController.getInstanceData().getWhereStatementController().check(updated_object)) {
+                    ids_to_ignore.push(updated_object[pk]);
+                    checked = true;
+                } else {
+                    checked = true;
+                    let new_object = Object.assign(this.pushController.getInstanceData().getObject().createModel(), old_object);
+                    objects_to_push.push(Object.assign(new_object, updated_object));
+                }
+
                 continue updateLoop;
             }
 
+            // 4. If an updated object wasn't in the original data, we now check if it will pass the where statements
+            // according to its updated values.
+            if (this.pushController.getInstanceData().getWhereStatementController().has() &&
+                !this.pushController.getInstanceData().getWhereStatementController().check(updated_object)) {
+                continue;
+            }
+
+            checked = true;
+
             let new_model = this.pushController.getInstanceData().getObject().createModel(updated_object);
 
-            // If the updated object wasn't in the array before, we can now push it.
             if (this.pushController.getInstanceData().getJoinStatementController().has()) {
                 this.pushController.getInstanceData().getJoinStatementController().attach(new_model)
             }
 
             objects_to_push.push(new_model);
         }
-console.log(objects_to_push);
-        console.log(old_data);
 
-        // We have to include all the original objects that haven't been updated.
+
+
+        // 5. We include all the original objects that haven't been updated and shouldn't be excluded
         oldLoop: for (const old_object of old_data) {
+
+            if (ids_to_ignore.includes(old_object[pk])) { continue; }
+
             for (const obj of objects_to_push) {
                 if (old_object[pk] === obj[pk]) { continue oldLoop }
             }
             objects_to_push.push(old_object);
         }
 
-        // todo remove this we only check on the target key, but we don't know if there are nested where has statements
-        // todo so we have to check if the wereController has any key that is presented in the collector.
-        // if (this.pushController.getInstanceData().getWhereStatementController().has(key)) {
-        const new_objects_to_push = this.pushController.getInstanceData().getWhereStatementController().filter(objects_to_push);
-        console.log();
-        if (objects_to_push.length !== new_objects_to_push.length) { checked = true; console.log('hiero'); }
-        objects_to_push = new_objects_to_push;
 
-        // }
-
-
-
-        console.log(objects_to_push);
-
-        // There might be objects with complicated whereHas or whereDoesntHave statements that will now be INCLUDED.
+        // 6. There might be objects with complicated whereHas or whereDoesntHave statements that will now be INCLUDED.
         if (this.pushController.getInstanceData().getWhereStatementController().has() &&
             this.complicated(this.pushController.getInstanceData().getWhereStatementController())) {
 

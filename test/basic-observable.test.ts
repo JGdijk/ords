@@ -84,10 +84,10 @@ test('simple-add-observable', done => {
     projectOrds.add({id: 4, name: 'project-4'});
 
     step = 2;
-    projectOrds.where('id', '=', 1).update({name: 'project-1a'});
+    projectOrds.where('id', '===', 1).update({name: 'project-1a'});
 
     step = 3;
-    projectOrds.where('id', '=', 4).update({name: 'project-4a'});
+    projectOrds.where('id', '===', 4).update({name: 'project-4a'});
 
     step = 4;
     projectOrds.whereBetween('id', 2, 3).update({name: 'similar_name'});
