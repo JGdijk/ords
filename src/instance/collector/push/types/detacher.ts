@@ -237,27 +237,28 @@ export class Detacher {
             // If both arrays have the same length we are done.
             if (filtered_all_relations.length !== new_array.length) {
 
+                let new_items = [];
                 relationLoop: for (const relation of filtered_all_relations) {
                     for (const included_object of new_array) {
-                        if (relation[pk] !== included_object[pk]) { continue relationLoop; }
-
-                        checked = true;
-                        let new_model = statement.getRelation().getRelationObject().createModel(relation);
-                        if (statement.hasStatements()) {
-                            // todo make it that statement can return joinStatementController
-                            for (const nestedStatement of statement.getStatements()) {
-                                nestedStatement.attach(new_model);
-                            }
-                        }
-                        new_array.push(new_model);
+                        if (relation[pk] === included_object[pk]) { continue relationLoop; }
                     }
+
+                    checked = true;
+                    let new_model = statement.getRelation().getRelationObject().createModel(relation);
+                    if (statement.hasStatements()) {
+                        statement.getJoinStatementController().attach(new_model)
+                    }
+                    new_items.push(new_model);
                 }
+                new_array = [...new_array, ...new_items];
             }
         }
 
-        return (checked)
-            ? new_array
-            : false;
+        if (!checked) { return false; }
+
+        return (!statement.hasOrderByStatements())
+            ? new_array // todo default order
+            : statement.getOrderByStatementController().order(new_array);
     }
 
     private checkRelationDataObject(object: any, statement: JoinStatementInterface): any | boolean {
@@ -322,10 +323,7 @@ export class Detacher {
                         let new_model = statement.getRelation().getRelationObject().createModel(all_relation_objects);
 
                         if (statement.hasStatements()) {
-                            const nested_statements = statement.getStatements();
-                            for (const nested_statement of nested_statements) {
-                                nested_statement.attach(new_model);
-                            }
+                            statement.getJoinStatementController().attach(new_model)
                         }
                         return new_model;
                     }
@@ -353,16 +351,20 @@ export class Detacher {
     }
 
     private checkWhereHasByKeys(controller: WhereStatementController): boolean {
-        for (const key of this.keys) {
-            if (controller.hasWhereHas(key)) { return true; }
-        }
-        return false;
+        return true;
+        //todo check why this doesn't work
+        // for (const key of this.keys) {
+        //     if (controller.hasWhereHas(key)) { return true; }
+        // }
+        // return false;
     }
 
     private checkWhereDoesntHaveByKeys(controller: WhereStatementController): boolean {
-        for (const key of this.keys) {
-            if (controller.hasWhereDoesntHave(key)) { return true; }
-        }
-        return false;
+        return true;
+        //todo check why this doesn't work
+        // for (const key of this.keys) {
+        //     if (controller.hasWhereDoesntHave(key)) { return true; }
+        // }
+        // return false;
     }
 }

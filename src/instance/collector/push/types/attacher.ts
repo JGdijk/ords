@@ -229,10 +229,7 @@ export class Attacher {
                     let new_model = statement.getRelation().getRelationObject().createModel(new_relation_object_orignal);
 
                     if (statement.hasStatements()) {
-                        // todo make it that statement can return joinStatementController
-                        for (const nestedStatement of statement.getStatements()) {
-                            nestedStatement.attach(new_model);
-                        }
+                        statement.getJoinStatementController().attach(new_model)
                     }
                     new_array.push(new_model);
                 }
@@ -241,6 +238,7 @@ export class Attacher {
 
         // We also have to check if the relation has a where has statement that might now INCLUDE relations that
         // were not in the array before.
+
         if (has_where_has) {
             const all_relations = statement.getRelation().findByObject(object);
             const filtered_all_relations = statement.getWhereStatementController().filter(all_relations);
@@ -250,28 +248,29 @@ export class Attacher {
 
                 const pk = statement.getRelation().getRelationObject().getPrimaryKey();
 
+                let new_items = [];
                 relationLoop: for (const relation of filtered_all_relations) {
                     for (const included_object of new_array) {
-                        if (relation[pk] !== included_object[pk]) { continue relationLoop; }
-
-                        checked = true;
-                        let new_model = statement.getRelation().getRelationObject().createModel(relation);
-
-                        if (statement.hasStatements()) {
-                            // todo make it that statement can return joinStatementController
-                            for (const nestedStatement of statement.getStatements()) {
-                                nestedStatement.attach(new_model);
-                            }
-                        }
-                        new_array.push(new_model);
+                        if (relation[pk] === included_object[pk]) { continue relationLoop; }
                     }
+
+                    checked = true;
+                    let new_model = statement.getRelation().getRelationObject().createModel(relation);
+
+                    if (statement.hasStatements()) {
+                        statement.getJoinStatementController().attach(new_model)
+                    }
+                    new_items.push(new_model);
                 }
+                new_array = [...new_array, ...new_items];
             }
         }
 
-        return (checked)
-            ? new_array
-            : false;
+        if (!checked) { return false; }
+
+        return (!statement.hasOrderByStatements())
+            ? new_array // todo default order
+            : statement.getOrderByStatementController().order(new_array);
     }
 
 
@@ -332,10 +331,7 @@ export class Attacher {
                     let new_model = statement.getRelation().getRelationObject().createModel(objects_to_attach[0]);
 
                     if (statement.hasStatements()) {
-                        const nested_statemetns = statement.getStatements();
-                        for (const nested_statement of nested_statemetns) {
-                            nested_statement.attach(new_model);
-                        }
+                        statement.getJoinStatementController().attach(new_model)
                     }
                     return new_model;
                 }
@@ -351,10 +347,7 @@ export class Attacher {
                        let new_model = statement.getRelation().getRelationObject().createModel(all_relation_objects);
 
                        if (statement.hasStatements()) {
-                           const nested_statements = statement.getStatements();
-                           for (const nested_statement of nested_statements) {
-                               nested_statement.attach(new_model);
-                           }
+                           statement.getJoinStatementController().attach(new_model)
                        }
                        return new_model;
                    }
@@ -383,16 +376,20 @@ export class Attacher {
     }
 
     private checkWhereHasByKeys(controller: WhereStatementController): boolean {
-        for (const key of this.keys) {
-            if (controller.hasWhereHas(key)) { return true; }
-        }
-        return false;
+        return true;
+        //todo check why this doesn't work
+        // for (const key of this.keys) {
+        //     if (controller.hasWhereHas(key)) { return true; }
+        // }
+        // return false;
     }
 
     private checkWhereDoesntHaveByKeys(controller: WhereStatementController): boolean {
-        for (const key of this.keys) {
-            if (controller.hasWhereDoesntHave(key)) { return true; }
-        }
-        return false;
+        return true;
+        //todo check why this doesn't work
+        // for (const key of this.keys) {
+        //     if (controller.hasWhereDoesntHave(key)) { return true; }
+        // }
+        // return false;
     }
 }

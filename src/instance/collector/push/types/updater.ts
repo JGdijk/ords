@@ -153,6 +153,7 @@ export class Updater {
     }
 
     private processRelations(): void {
+
         if (!this.pushController.getInstanceData().getJoinStatementController().has()) { return; }
 
         const statements = this.pushController.getInstanceData().getJoinStatementController().getStatements();
@@ -283,7 +284,8 @@ export class Updater {
 
                         checked = true;
                         let new_model = statement.getRelation().getRelationObject().createModel(relationObject);
-                        statement.attach(new_model);
+
+                        statement.getJoinStatementController().attach(new_model);
                         new_array.push(new_model);
                     }
                 }
@@ -354,7 +356,7 @@ export class Updater {
 
             if (new_relationObject && check) {
                 let new_model = statement.getRelation().getRelationObject().createModel(new_relationObject);
-                statement.attach(new_model);
+                statement.getJoinStatementController().attach(new_model);
             }
         }
 

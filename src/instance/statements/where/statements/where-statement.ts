@@ -27,6 +27,8 @@ export class WhereStatement implements WhereStatementInterface {
                 return (object[this.key] == this.value);
             case '!=':
                 return (object[this.key] != this.value);
+            case '=':
+                return (object[this.key] == this.value);
             case '>':
                 return (object[this.key] > this.value);
             case '<':

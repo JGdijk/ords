@@ -72,10 +72,10 @@ test('simple-relation-observable', done => {
     taskOrds.remove(2);
 
     step = 2;
-    projectOrds.attach(5,'tasks', 1);
+    projectOrds.attach(1,'tasks', 5);
 
     step = 3;
-    projectOrds.detach([3,4], 'tasks', 1);
+    projectOrds.detach(1, 'tasks', [3,4]);
 
     expect(steps_taken).toBe(4);
     done();

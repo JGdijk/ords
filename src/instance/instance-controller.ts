@@ -142,16 +142,17 @@ export class InstanceController implements InstanceInterface {
         this.getInstance().remove(ids);
     }
 
-    public attach(relation_ids: number | string | number[] | string[],
+    public attach(ids: number | string | number[] | string[],
                   relation_name: string,
-                  ids: number | string | number[] | string[]): void {
-        this.getInstance().attach(relation_ids, relation_name, ids);
+                  relation_ids: number | string | number[] | string[]
+                  ): void {
+        this.getInstance().attach(ids, relation_name, relation_ids);
     }
 
-    public detach(relation_ids: number | string | number[] | string[],
+    public detach(ids: number | string | number[] | string[],
                   relation_name: string,
-                  ids: number | string | number[] | string[]): void {
-        this.getInstance().detach(relation_ids, relation_name, ids);
+                  relation_ids: number | string | number[] | string[]): void {
+        this.getInstance().detach(ids, relation_name, relation_ids);
     }
 
 

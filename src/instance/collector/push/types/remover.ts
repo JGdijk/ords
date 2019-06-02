@@ -164,7 +164,11 @@ export class Remover {
         if (checked) {
             this.checked = true;
             this.pushController.setChecked();
-            return new_relation_array;
+            if (!checked) { return false; }
+
+            return (!statement.hasOrderByStatements())
+                ? new_relation_array
+                : statement.getOrderByStatementController().order(new_relation_array);
         } else {
             return false;
         }
