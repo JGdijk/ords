@@ -168,6 +168,8 @@ export class RdsObject {
 
         this.data.remove(ids);
 
+        // todo relations are not being removed
+
         collector.remove(this.getModelName(), ids);
     }
 
