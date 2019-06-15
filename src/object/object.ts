@@ -5,6 +5,7 @@ import {ObjectData} from "./object-data";
 import {InstanceController} from "../instance/instance-controller";
 import {Collector} from "../instance/collector/collector";
 import {Instance} from "../model/decorators/bag/instance";
+import {rdsContainer} from "../rds-container";
 export class RdsObject {
 
     private pretty_name: string;
@@ -45,7 +46,7 @@ export class RdsObject {
         // console.log(parent.name);
         // this.parent = (funcNameRegex).exec(parent.constructor.toString())[1].toLowerCase();
 
-        this.model_constructor = config.model;
+        this.setModelConstructor(config.model);
 
         this.config = config;
     }
@@ -218,6 +219,92 @@ export class RdsObject {
         }
 
         return new this.model_constructor(object);
+    }
+
+    private setModelConstructor (constructor: any) {
+
+        const self = this;
+
+        let classes = {};
+        classes[this.getModelName()] = class extends constructor {
+            constructor(data?: any) {
+                super(data);
+            }
+
+            update (data: any): void {
+                const pk = self.getPrimaryKey();
+                if (!this.hasOwnProperty(pk)) {
+                    // todo error can't update
+                    return;
+                }
+                if (!self.has(this[pk])) {
+                    // todo error object doesn't exist
+                    return;
+                }
+
+                self.rds.update(self.getModelName(), this[pk], data);
+            };
+
+            remove (): void {
+                const pk = self.getPrimaryKey();
+                if (!this.hasOwnProperty(pk)) {
+                    // todo error can't update
+                    return;
+                }
+                if (!self.has(this[pk])) {
+                    // todo error object doesn't exist
+                    return;
+                }
+
+                self.rds.remove(self.getModelName(), this[pk]);
+            };
+
+            attach (relation: string, ids?: number | string | number[] | string[]): void {
+                const pk = self.getPrimaryKey();
+
+                if (!this.hasOwnProperty(pk)) {
+                    // todo error can't update
+                    return;
+                }
+                if (!self.has(this[pk])) {
+                    // todo error object doesn't exist
+                    return;
+                }
+
+                const ids_array: any = (!Array.isArray(ids)) ? [ids] : ids;
+
+                self.rds.attach(
+                    self.getModelName(),
+                    relation,
+                    [this[pk]],
+                    ids_array
+                )
+            };
+
+            detach (relation: string, ids?: number | string | number[] | string[]): void {
+                const pk = self.getPrimaryKey();
+
+                if (!this.hasOwnProperty(pk)) {
+                    // todo error can't update
+                    return;
+                }
+                if (!self.has(this[pk])) {
+                    // todo error object doesn't exist
+                    return;
+                }
+
+                const ids_array: any = (!Array.isArray(ids)) ? [ids] : ids;
+
+                self.rds.detach(
+                    self.getModelName(),
+                    relation,
+                    [this[pk]],
+                    ids_array
+                )
+            };
+        };
+
+        this.model_constructor = classes[this.getModelName()];
     }
 
     private setPrimaryKey(instance: Instance | null): void {
