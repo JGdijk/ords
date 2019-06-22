@@ -5,7 +5,6 @@ import {ObjectData} from "./object-data";
 import {InstanceController} from "../instance/instance-controller";
 import {Collector} from "../instance/collector/collector";
 import {Instance} from "../model/decorators/bag/instance";
-import {rdsContainer} from "../rds-container";
 export class RdsObject {
 
     private pretty_name: string;
@@ -29,6 +28,8 @@ export class RdsObject {
     private rds: Rds;
 
     private config: ModelConfig;
+
+    private model_stamp: string;
 
     constructor(config: ModelConfig, rds: Rds) {
         this.rds = rds;
@@ -219,6 +220,14 @@ export class RdsObject {
         }
 
         return new this.model_constructor(object);
+    }
+
+    public hasModelStamp(): boolean {
+        return !!(this.model_stamp);
+    }
+
+    public getModelStampKey(): string {
+       return this.model_stamp;
     }
 
     private setModelConstructor (constructor: any) {

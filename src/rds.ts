@@ -2,7 +2,6 @@ import {ObjectContainer} from "./object/object-container";
 import {Observable} from "rxjs/index";
 import {publish} from "rxjs/operators";
 import {Collector} from "./instance/collector/collector";
-import {rdsContainer} from "./rds-container";
 import {RelationConfig} from "./object/relation/relation";
 
 export type ModelConfig = {
@@ -43,7 +42,7 @@ export class Rds {
         //     object.getRelationContainer().initReverse();
         // }
 
-        rdsContainer.add(this);
+        // rdsContainer.add(this);
         // console.log(modelDecoratorBag);
         // console.log(this);
     }

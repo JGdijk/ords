@@ -12,6 +12,8 @@ export class Instance {
 
     private relations: RelationConfig[];
 
+    private model_stamp: string;
+
     constructor(name: string) {
         this.name = name;
         this.dates = [];
@@ -53,6 +55,18 @@ export class Instance {
 
     public getRelations(): RelationConfig[] {
         return this.relations;
+    }
+
+    public hasModelStamp(): boolean {
+        return !!(this.model_stamp);
+    }
+
+    public setModelStamp(key: string): void {
+        this.model_stamp = key;
+    }
+
+    public getModelStamp(): string {
+        return this.model_stamp;
     }
 
 }

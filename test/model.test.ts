@@ -112,3 +112,8 @@ test('model', done => {
     subscription.unsubscribe();
     subscription2.unsubscribe();
 });
+
+test('model-function-inheritance', () => {
+    expect(projectOrds.findStatic(1).testFunction()).toBe('test');
+});
+
