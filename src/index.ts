@@ -1,4 +1,3 @@
-export {rds} from "./rds";
-
+export {Ords} from "./ords"
 
 
