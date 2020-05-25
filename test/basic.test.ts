@@ -1,14 +1,21 @@
 import {Ords} from "../src/ords";
 import {ProjectTest} from "./helpers/models/project-test";
+import {TaskTest} from "./helpers/models/task-test";
 
 const ords = new Ords([
-   {name: 'project', model: ProjectTest}
+   {name: 'project', model: ProjectTest},
+   {name: 'task', model: TaskTest}
 ]);
 
 const projectOrds = ords.use('project');
 
 projectOrds.add([
-   {id: 1, name: 'project-1'},
+   {id: 1, name: 'project-1', tasks: [
+         {task_id: 1, name: 'task-1'},
+         {task_id: 2, name: 'task-2'},
+         {task_id: 3, name: 'task-3'},
+         {task_id: 4, name: 'task-4'}
+      ]},
    {id: 2, name: 'project-2'},
    {id: 3, name: 'project-3'}
 ]);
@@ -16,6 +23,7 @@ projectOrds.add([
 // counting the amount of objects.
 test('get', done => {
    let subscription = projectOrds.get().subscribe((projects) => {
+      projects[0].tasks = 'test';
       expect(projects.length).toBe(3);
       done();
    });

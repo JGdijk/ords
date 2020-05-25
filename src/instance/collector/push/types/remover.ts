@@ -94,7 +94,10 @@ export class Remover {
                     this.checkRelationData(object[statement.getRelation().getObjectName()], statement);
                 if (new_relation_data !== false) {
                     let new_object = Object.assign({}, object);
-                    new_object[statement.getRelation().getObjectName()] = new_relation_data;
+                    Object.defineProperty(new_object, statement.getRelation().getObjectName(), {
+                        value: new_relation_data,
+                        enumerable: statement.getRelation().returnsMany(),
+                    })
                     new_array.push(new_object);
 
                     checked = true;
@@ -147,7 +150,10 @@ export class Remover {
                         if (!new_object) {
                             new_object = Object.assign({}, object);
                         }
-                        new_object[relationStatement.getRelation().getObjectName()] = new_relation_data;
+                        Object.defineProperty(new_object, statement.getRelation().getObjectName(), {
+                            value: new_relation_data,
+                            enumerable: statement.getRelation().returnsMany(),
+                        })
                         checked = true;
                     }
                 }
@@ -200,7 +206,10 @@ export class Remover {
             if (!new_object) {
                 new_object = Object.assign({}, object);
             }
-            new_object[relationStatement.getRelation().getObjectName()] = new_relation_data;
+            Object.defineProperty(new_object, statement.getRelation().getObjectName(), {
+                value: new_relation_data,
+                enumerable: statement.getRelation().returnsMany(),
+            })
             relation_checked = true;
         }
 

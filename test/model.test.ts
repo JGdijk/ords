@@ -33,6 +33,7 @@ test('model', done => {
     let step2_taken = 0;
 
     let subscription = projectOrds.get().subscribe((projects) => {
+        console.log(projects);
         step1_taken ++;
         p = projects;
 

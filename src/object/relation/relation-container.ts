@@ -33,6 +33,10 @@ export class RelationContainer {
         }
     }
 
+    public get(): Relation[] {
+        return this.relations;
+    }
+
     public findByObjectName(key: string): Relation {
         for (const relation of this.relations) {
             if (key === relation.getObjectName()) {

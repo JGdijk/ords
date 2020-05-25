@@ -124,15 +124,21 @@ export class Detacher {
 
         for (const statement of statements) {
             for (let object of data) {
-
                 // If a relation doesn't contain any of the collector keys in either the joinStatement or whereStatement
                 // we can continue;
                 // if (!this.relationHasKeys(statement)) { continue; } // todo this isn't working, we need to check for both object name as relation name, not only relation name.
 
                 const new_relation_data = this.checkRelationData(object, statement);
+
                 if (new_relation_data !== false) {
                     let new_model = statement.getRelation().getLocalObject().createModel(object);
-                    new_model[statement.getRelation().getObjectName()] = new_relation_data;
+
+                    Object.defineProperty(new_model, statement.getRelation().getObjectName(), {
+                        value: new_relation_data,
+                        enumerable: statement.getRelation().returnsMany()
+                        // writable: false
+                    })
+                    // new_model[statement.getRelation().getObjectName()] = new_relation_data;
                     new_array.push(new_model);
 
                     checked = true;
@@ -216,7 +222,10 @@ export class Detacher {
                         if (!new_model) {
                             new_model = relationStatement.getRelation().getLocalObject().createModel(relationObject);
                         }
-                        new_model[relationStatement.getRelation().getObjectName()] = new_relation_data;
+                        Object.defineProperty(new_model, statement.getRelation().getObjectName(), {
+                            value: new_relation_data,
+                            enumerable: statement.getRelation().returnsMany(),
+                        })
                     }
                 }
             }
@@ -301,7 +310,10 @@ export class Detacher {
                         if (!new_model) {
                             new_model = relationStatement.getRelation().getLocalObject().createModel(relationObject);
                         }
-                        new_model[relationStatement.getRelation().getObjectName()] = new_relation_data;
+                        Object.defineProperty(new_model, statement.getRelation().getObjectName(), {
+                            value: new_relation_data,
+                            enumerable: statement.getRelation().returnsMany(),
+                        })
                     }
                 }
             }

@@ -13,7 +13,16 @@ export class JoinStatement implements JoinStatementInterface {
     }
 
     attach(object: any): void {
-        object[this.relation.getObjectName()] = this.relation.findByObject(object, true);
+        Object.defineProperty(object, this.relation.getObjectName(), {
+            value: this.relation.findByObject(object, true),
+            enumerable: this.relation.returnsMany()
+            // writable: false
+        })
+        // console.log(this.relation.getObjectName())
+        // console.log(object);
+        // object.defineProperty()
+        // console.log('top');
+        // object[this.relation.getObjectName()] = this.relation.findByObject(object, true);
     }
 
     has(key: string): boolean {

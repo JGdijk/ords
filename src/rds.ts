@@ -74,11 +74,13 @@ export class Rds {
         const collector = new Collector();
         //todo check if relation exists error?
         if (!this.getObjectContainer().find(key).getRelationContainer().hasByObjectName(relation)) { return; }
+
         this.getObjectContainer()
             .find(key)
             .getRelationContainer()
             .findByObjectName(relation)
             .attach(key_ids, relation_ids, collector);
+
         this.observer.next(collector);
     }
 

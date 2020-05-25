@@ -83,8 +83,8 @@ export class Updater {
                     checked = true;
                 } else {
                     checked = true;
-                    let new_object = Object.assign(this.pushController.getInstanceData().getObject().createModel(), old_object);
-                    objects_to_push.push(Object.assign(new_object, updated_object));
+                    const new_object = this.pushController.getInstanceData().getObject().updateAndCreateNewModel(old_object, updated_object);
+                    objects_to_push.push(new_object);
                 }
 
                 continue updateLoop;
@@ -173,8 +173,11 @@ export class Updater {
                 const new_relation_data =
                     this.checkRelationData(object, statement);
                 if (new_relation_data !== false) {
-                    let new_model = Object.assign(this.pushController.getInstanceData().getObject().createModel(), object);
-                    new_model[statement.getRelation().getObjectName()] = new_relation_data;
+                    let new_model = this.pushController.getInstanceData().getObject().createModel(object);
+                    Object.defineProperty(new_model, statement.getRelation().getObjectName(), {
+                        value: new_relation_data,
+                        enumerable: statement.getRelation().returnsMany(),
+                    })
                     new_array.push(new_model);
 
                     checked = true;
@@ -224,9 +227,7 @@ export class Updater {
             // We check if a relation object needs to update its core data.
             for (const updated_object of objects_to_update) {
                 if (updated_object[pk] !== relationObject[pk]) { continue; }
-
-                new_model = Object.assign(statement.getRelation().getRelationObject().createModel(), relationObject);
-                new_model = Object.assign(new_model, updated_object);
+                new_model = statement.getRelation().getRelationObject().updateAndCreateNewModel(relationObject, updated_object);
                 break;
             }
 
@@ -251,8 +252,11 @@ export class Updater {
                     const new_relation_data =
                         this.checkRelationData(relationObject, relationStatement);
                     if (new_relation_data !== false) {
-                        new_model = Object.assign(statement.getRelation().getRelationObject().createModel(), relationObject);
-                        new_model[relationStatement.getRelation().getObjectName()] = new_relation_data;
+                        new_model = statement.getRelation().getRelationObject().createModel(relationObject);
+                        Object.defineProperty(new_model, statement.getRelation().getObjectName(), {
+                            value: new_relation_data,
+                            enumerable: statement.getRelation().returnsMany(),
+                        })
                     }
                 }
             }
@@ -313,8 +317,7 @@ export class Updater {
             for (let object_to_update of objects_to_update) {
                 if (relationObject[pk] !== object_to_update[pk]) { continue; }
 
-                new_model = Object.assign(statement.getRelation().getRelationObject().createModel(), relationObject);
-                new_model = Object.assign(new_model, object_to_update);
+                new_model = statement.getRelation().getRelationObject().updateAndCreateNewModel(relationObject, object_to_update);
             }
 
             // If the statement has a whereHas or whereDoesn't have statement with extra conditions, we have to check
@@ -335,9 +338,13 @@ export class Updater {
                         this.checkRelationData(relationObject, relationStatement);
                     if (new_relation_data !== false) {
                         if (!new_model) {
-                            new_model = Object.assign(statement.getRelation().getRelationObject().createModel(), relationObject);
+                            new_model = statement.getRelation().getRelationObject().createModel(relationObject);
                         }
-                        new_model[relationStatement.getRelation().getObjectName()] = new_relation_data;
+                        Object.defineProperty(new_model, statement.getRelation().getObjectName(), {
+                            value: new_relation_data,
+                            enumerable: statement.getRelation().returnsMany(),
+                            // writable: true
+                        })
                     }
                 }
             }

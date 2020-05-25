@@ -173,6 +173,7 @@ export abstract class Relation {
 
                     // we have to check for duplicates
                     const array = this.data.get(object_id);
+
                     corrected_relation_ids = [];
 
                     for (const id of relation_ids) {

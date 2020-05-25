@@ -40,6 +40,7 @@ export class PushController {
     }
 
     public check(): CollectorPushResult {
+
         this.adder.run();
         this.attacher.run();
         this.detacher.run();

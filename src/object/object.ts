@@ -5,6 +5,7 @@ import {ObjectData} from "./object-data";
 import {InstanceController} from "../instance/instance-controller";
 import {Collector} from "../instance/collector/collector";
 import {Instance} from "../model/decorators/bag/instance";
+import {Relation} from "./relation/relation";
 export class RdsObject {
 
     private pretty_name: string;
@@ -69,6 +70,24 @@ export class RdsObject {
 
         // immutables
         this.setImmutables(bag);
+
+        for (const relation of this.relationContainer.get()) {
+            Object.defineProperties(this.model_constructor.prototype, {
+                [relation.getObjectName()]: {
+                    configurable: true,
+                    get: function () {
+                        return relation.findByObject(this);
+                    },
+                    set: function () {
+                        throw 'Relation properties can\'t be overwritten'
+                    }
+                }
+            })
+        }
+
+        // console.log(classes[this.getModelName()].prototype['test'] = function () {
+        //     console.log('woop');
+        // });
 
         // data
         this.data = new ObjectData(this.primary_key);
@@ -219,7 +238,53 @@ export class RdsObject {
             object = new_object;
         }
 
-        return new this.model_constructor(object);
+        let relations = [];
+        let properties = {}
+
+        if (object) {
+            let keys = Object.keys(object);
+
+            keyLoop: for (const key of keys) {
+
+                for (const relation of this.getRelationContainer().get()) {
+                    if (key === relation.getObjectName()) {
+                        relations.push({relation: relation, value: object[key]});
+                        continue keyLoop;
+                    }
+                }
+
+                properties[key] = object[key];
+            }
+
+            let new_model = new this.model_constructor(properties);
+
+            for (const relation of relations) {
+                Object.defineProperty(new_model, relation.relation.getObjectName(), {
+                    value: relation.value,
+                    enumerable: relation.relation.returnsMany(),
+                    writable: true
+                })
+            }
+
+            return new_model;
+        } else {
+            return new this.model_constructor();
+        }
+
+
+
+        // return new this.model_constructor(object);
+    }
+
+    public updateAndCreateNewModel(old_model: any, new_values: any): any {
+        let copied_model = this.createModel(old_model);
+        let keys = Object.keys(new_values);
+
+        for (const key of keys) {
+            copied_model[key] = new_values[key];
+        }
+
+        return copied_model;
     }
 
     public hasModelStamp(): boolean {

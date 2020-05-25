@@ -32,6 +32,7 @@ export class Attacher {
 
         this.processTarget();
 
+
         let data = null;
 
         if (this.checked) {
@@ -134,15 +135,26 @@ export class Attacher {
 
                 // if (!this.relationHasKeys(statement)) { continue; } // todo this isn't working, we need to check for both object name as relation name, not only relation name.
 
+
                 const new_relation_data = this.checkRelationData(object, statement);
+
                 if (new_relation_data !== false) {
+
                     let new_model = statement.getRelation().getLocalObject().createModel(object);
-                    new_model[statement.getRelation().getObjectName()] = new_relation_data;
+
+                    Object.defineProperty(new_model, statement.getRelation().getObjectName(), {
+                        value: new_relation_data,
+                        enumerable: statement.getRelation().returnsMany(),
+                        // writable: true
+                    })
+                    // new_model[statement.getRelation().getObjectName()] = new_relation_data;
+
                     new_array.push(new_model);
                     checked = true;
                 } else {
                     new_array.push(object);
                 }
+
             }
         }
 
@@ -151,11 +163,12 @@ export class Attacher {
             this.pushController.setChecked();
             this.pushController.setData(new_array);
         }
+
     }
 
     private checkRelationData(object: any, statement: JoinStatementInterface): any | boolean {
 
-        return (object === null || !Array.isArray(object[statement.getRelation().getObjectName()]))
+        return (object === null || !statement.getRelation().returnsMany())
             ? this.checkRelationDataObject(object, statement)
             : this.checkRelationDataArray(object, statement);
     }
@@ -197,7 +210,10 @@ export class Attacher {
                         if (!new_model) {
                             new_model = relationStatement.getRelation().getLocalObject().createModel(relationObject);
                         }
-                        new_model[relationStatement.getRelation().getObjectName()] = new_relation_data;
+                        Object.defineProperty(new_model, statement.getRelation().getObjectName(), {
+                            value: new_relation_data,
+                            enumerable: statement.getRelation().returnsMany(),
+                        })
                     }
                 }
             }
@@ -302,7 +318,10 @@ export class Attacher {
                         if (!new_model) {
                             new_model = relationStatement.getRelation().getLocalObject().createModel(relationObject);
                         }
-                        new_model[relationStatement.getRelation().getObjectName()] = new_relation_data;
+                        Object.defineProperty(new_model, statement.getRelation().getObjectName(), {
+                            value: new_relation_data,
+                            enumerable: statement.getRelation().returnsMany(),
+                        })
                     }
                 }
                 if (new_model) { return new_model; }

@@ -24,18 +24,25 @@ export class JoinCallbackStatement implements JoinStatementInterface {
     }
 
     public attach(object: any): void {
+
         let relation_objects = this.relation.findByObject(object);
 
         // Returns if null or []
         if (!relation_objects || !relation_objects.length) {
-            object[this.relation.getObjectName()] = relation_objects;
+            Object.defineProperty(object, this.relation.getObjectName(), {
+                value: relation_objects,
+                enumerable: this.relation.returnsMany()
+            })
             return;
         }
 
         if (!this.relation.returnsMany()) {
             // If the relation doesn't pass the where statement return null.
             if (this.whereStatementController.has() && !this.getWhereStatementController().check(relation_objects)) {
-                object[this.relation.getObjectName()] = null;
+                Object.defineProperty(object, this.relation.getObjectName(), {
+                    value: null,
+                    enumerable: this.relation.returnsMany()
+                })
                 return;
             }
 
@@ -45,7 +52,11 @@ export class JoinCallbackStatement implements JoinStatementInterface {
                 this.getJoinStatementController().attach(model);
             }
 
-            object[this.relation.getObjectName()] = model;
+            Object.defineProperty(object, this.relation.getObjectName(), {
+                value: model,
+                enumerable: this.relation.returnsMany()
+            })
+
             return;
 
         } else {
@@ -65,7 +76,12 @@ export class JoinCallbackStatement implements JoinStatementInterface {
             if (this.getJoinStatementController().has()) {
                 this.getJoinStatementController().attachMany(models);
             }
-            object[this.relation.getObjectName()] = models;
+
+            Object.defineProperty(object, this.relation.getObjectName(), {
+                value: models,
+                enumerable: this.relation.returnsMany()
+            })
+
             return;
         }
     }

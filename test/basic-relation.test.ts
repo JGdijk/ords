@@ -34,6 +34,9 @@ test('simple-relation-observable', done => {
     let subscription = projectOrds.with('tasks').get().subscribe((projects) => {
         switch(step) {
             case 0:
+                projects[0].tasks;
+                projects[0].tasks;
+
                 steps_taken ++;
                 expect(projects.length).toBe(3);
                 expect(projects[0].tasks.length).toBe(4);
