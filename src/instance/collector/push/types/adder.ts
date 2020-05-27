@@ -23,11 +23,13 @@ export class Adder {
     }
 
     public run(): void {
+
         if (!this.hasKeys()) { return; }
 
         this.processTarget();
 
         let data = null;
+
         if (this.checked) {
             if (this.pushController.getInstanceData().getOrderByStatementController().has()) {
                 data = this.pushController.getInstanceData().getOrderByStatementController().order(this.pushController.getData());

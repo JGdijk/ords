@@ -293,7 +293,6 @@ test('complex-relation-where-doesnt-have', done => {
     userOrds2.add({id: 21, name: 'user-21', random: 4});
     taskOrds2.attach(1, 'users', 21);
 
-
     expect(steps_taken).toBe(5);
     done();
     subscription.unsubscribe();
