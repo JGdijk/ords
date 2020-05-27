@@ -135,7 +135,6 @@ export class Attacher {
 
                 // if (!this.relationHasKeys(statement)) { continue; } // todo this isn't working, we need to check for both object name as relation name, not only relation name.
 
-
                 const new_relation_data = this.checkRelationData(object, statement);
 
                 if (new_relation_data !== false) {
@@ -183,6 +182,7 @@ export class Attacher {
         const has_where_doesnt_have = (!statement.hasWhereStatements()) ? false :
             (this.checkWhereDoesntHaveByKeys(statement.getWhereStatementController()));
 
+
         for (let relationObject of object[statement.getRelation().getObjectName()]) {
 
             // We check if the object should now be EXCLUDED.
@@ -204,15 +204,16 @@ export class Attacher {
                     // whereStatement we can continue.
                     // if (!this.relationHasKeys(relationStatement)) { continue; } // todo this isn't working, we need to check for both object name as relation name, not only relation name.
 
-                    const new_relation_data =
-                        this.checkRelationData(relationObject, relationStatement);
+                    const new_relation_data = this.checkRelationData(relationObject, relationStatement);
+
                     if (new_relation_data !== false) {
                         if (!new_model) {
                             new_model = relationStatement.getRelation().getLocalObject().createModel(relationObject);
                         }
-                        Object.defineProperty(new_model, statement.getRelation().getObjectName(), {
+
+                        Object.defineProperty(new_model, relationStatement.getRelation().getObjectName(), {
                             value: new_relation_data,
-                            enumerable: statement.getRelation().returnsMany(),
+                            enumerable: relationStatement.getRelation().returnsMany(),
                         })
                     }
                 }
@@ -318,9 +319,9 @@ export class Attacher {
                         if (!new_model) {
                             new_model = relationStatement.getRelation().getLocalObject().createModel(relationObject);
                         }
-                        Object.defineProperty(new_model, statement.getRelation().getObjectName(), {
+                        Object.defineProperty(new_model, relationStatement.getRelation().getObjectName(), {
                             value: new_relation_data,
-                            enumerable: statement.getRelation().returnsMany(),
+                            enumerable: relationStatement.getRelation().returnsMany(),
                         })
                     }
                 }

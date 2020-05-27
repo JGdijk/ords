@@ -150,9 +150,9 @@ export class Remover {
                         if (!new_object) {
                             new_object = Object.assign({}, object);
                         }
-                        Object.defineProperty(new_object, statement.getRelation().getObjectName(), {
+                        Object.defineProperty(new_object, relationStatement.getRelation().getObjectName(), {
                             value: new_relation_data,
-                            enumerable: statement.getRelation().returnsMany(),
+                            enumerable: relationStatement.getRelation().returnsMany(),
                         })
                         checked = true;
                     }
@@ -206,9 +206,9 @@ export class Remover {
             if (!new_object) {
                 new_object = Object.assign({}, object);
             }
-            Object.defineProperty(new_object, statement.getRelation().getObjectName(), {
+            Object.defineProperty(new_object, relationStatement.getRelation().getObjectName(), {
                 value: new_relation_data,
-                enumerable: statement.getRelation().returnsMany(),
+                enumerable: relationStatement.getRelation().returnsMany(),
             })
             relation_checked = true;
         }

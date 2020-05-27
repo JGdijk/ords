@@ -253,9 +253,9 @@ export class Updater {
                         this.checkRelationData(relationObject, relationStatement);
                     if (new_relation_data !== false) {
                         new_model = statement.getRelation().getRelationObject().createModel(relationObject);
-                        Object.defineProperty(new_model, statement.getRelation().getObjectName(), {
+                        Object.defineProperty(new_model, relationStatement.getRelation().getObjectName(), {
                             value: new_relation_data,
-                            enumerable: statement.getRelation().returnsMany(),
+                            enumerable: relationStatement.getRelation().returnsMany(),
                         })
                     }
                 }
@@ -340,9 +340,9 @@ export class Updater {
                         if (!new_model) {
                             new_model = statement.getRelation().getRelationObject().createModel(relationObject);
                         }
-                        Object.defineProperty(new_model, statement.getRelation().getObjectName(), {
+                        Object.defineProperty(new_model, relationStatement.getRelation().getObjectName(), {
                             value: new_relation_data,
-                            enumerable: statement.getRelation().returnsMany(),
+                            enumerable: relationStatement.getRelation().returnsMany(),
                             // writable: true
                         })
                     }

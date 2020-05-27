@@ -222,9 +222,9 @@ export class Detacher {
                         if (!new_model) {
                             new_model = relationStatement.getRelation().getLocalObject().createModel(relationObject);
                         }
-                        Object.defineProperty(new_model, statement.getRelation().getObjectName(), {
+                        Object.defineProperty(new_model, relationStatement.getRelation().getObjectName(), {
                             value: new_relation_data,
-                            enumerable: statement.getRelation().returnsMany(),
+                            enumerable: relationStatement.getRelation().returnsMany(),
                         })
                     }
                 }
@@ -310,9 +310,9 @@ export class Detacher {
                         if (!new_model) {
                             new_model = relationStatement.getRelation().getLocalObject().createModel(relationObject);
                         }
-                        Object.defineProperty(new_model, statement.getRelation().getObjectName(), {
+                        Object.defineProperty(new_model, relationStatement.getRelation().getObjectName(), {
                             value: new_relation_data,
-                            enumerable: statement.getRelation().returnsMany(),
+                            enumerable: relationStatement.getRelation().returnsMany(),
                         })
                     }
                 }

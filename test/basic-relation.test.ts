@@ -3,8 +3,10 @@ import {ProjectTest} from "./helpers/models/project-test";
 import {TaskTest} from "./helpers/models/task-test";
 
 const ords = new Ords([
-    {name: 'project', model: ProjectTest},
-    {name: 'task', model: TaskTest}
+    {name: 'project', model: ProjectTest, relations: [
+            {name: 'tasks', model_name: 'task', returns_many: true, type: 'hasMany'}
+        ]},
+    {name: 'task', model: TaskTest, primaryKey: 'task_id'}
 ]);
 
 const projectOrds = ords.use('project');

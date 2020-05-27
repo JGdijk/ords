@@ -42,6 +42,7 @@ export class WhereDoesntHaveStatementCallbackStatement implements WhereStatement
     }
 
     public check(object: any): boolean {
+
         //todo maybe better primary key check / error?
         const primary_key = this.relation.getLocalObject().getPrimaryKey();
         if (!object.hasOwnProperty(primary_key)) { return false; }
@@ -52,6 +53,7 @@ export class WhereDoesntHaveStatementCallbackStatement implements WhereStatement
 
         if (this.relation.returnsMany()) {
             relation = this.whereStatementController.filter(relation);
+
             return (relation.length === 0);
         } else {
             return !this.whereStatementController.check(relation);

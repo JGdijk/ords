@@ -25,6 +25,7 @@ export class JoinCallbackStatement implements JoinStatementInterface {
 
     public attach(object: any): void {
 
+
         let relation_objects = this.relation.findByObject(object);
 
         // Returns if null or []

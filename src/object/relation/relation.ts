@@ -36,6 +36,7 @@ export abstract class Relation {
 
         this.data = new Map();
         this.local_name = local_name;
+
         this.relationRdsObject = rds.getObjectContainer().find(this.model_name);
         this.localRdsObject = rds.getObjectContainer().find(this.local_name);
 

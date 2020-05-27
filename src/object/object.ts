@@ -149,6 +149,7 @@ export class RdsObject {
             for (const key of Object.keys(object)) {
 
                 // if the object doesn't contain this key continue.
+
                 if(!this.getRelationContainer().hasByObjectName(key)) { continue; }
 
                 //add relation
@@ -401,10 +402,14 @@ export class RdsObject {
             for (const config of this.config.relations) {
 
                 // we check if the relation model is defined
+
                 if (!this.rds.getObjectContainer().hasPretty(config.model_name)) {
                     // todo throw error, model not found.
                     continue;
                 }
+
+                // we have to set the actual modal name in case of compiling etc
+                config.model_name = this.rds.getObjectContainer().findPretty(config.model_name).getModelName();
 
                 // add the relation
                 this.relationContainer.add(config, this.getModelName(), this.rds);

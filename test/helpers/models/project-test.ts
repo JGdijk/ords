@@ -7,13 +7,10 @@ import {ModelStamp} from "../../../src/model/stamp/model-stamp";
 
 export class ProjectTest extends Model {
 
-    @PrimaryKey() public id: number;
+    public id: number;
 
     public name: string;
 
-    @HasMany({
-        model: TaskTest
-    })
     public tasks: TaskTest[];
 
     public testFunction (): string {

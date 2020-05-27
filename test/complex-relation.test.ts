@@ -4,10 +4,15 @@ import {TaskTest} from "./helpers/models/task-test";
 import {UserTest} from "./helpers/models/user-test";
 import {JoinCallback} from "../src/instance/statements/join/statements/callback/join-callback";
 import {WhereHasStatementCallback} from "../src/instance/statements/where/statements/callback/where-has/where-has-statement-callback";
+import {WhereDoesntHaveStatementCallback} from "../src/instance/statements/where/statements/callback/where-doesnt-have/where-doesnt-have-statement-callback";
 
 const ords = new Ords([
-    {name: 'project', model: ProjectTest},
-    {name: 'task', model: TaskTest},
+    {name: 'project', model: ProjectTest, relations: [
+            {name: 'tasks', model_name: 'task', returns_many: true, type: 'hasMany'}
+        ]},
+    {name: 'task', model: TaskTest, primaryKey: 'task_id', relations: [
+            {name: 'users', model_name: 'user', returns_many: true, type: 'hasMany'}
+        ]},
     {name: 'user', model: UserTest}
 ]);
 
@@ -152,8 +157,12 @@ test('complex-relation-where-has', done => {
 });
 
 const ords2 = new Ords([
-    {name: 'project', model: ProjectTest},
-    {name: 'task', model: TaskTest},
+    {name: 'project', model: ProjectTest, relations: [
+            {name: 'tasks', model_name: 'task', returns_many: true, type: 'hasMany'}
+        ]},
+    {name: 'task', model: TaskTest, primaryKey: 'task_id', relations: [
+            {name: 'users', model_name: 'user', returns_many: true, type: 'hasMany'}
+        ]},
     {name: 'user', model: UserTest}
 ]);
 
@@ -192,14 +201,13 @@ test('complex-relation-where-doesnt-have', done => {
             joinTaskCallback
                 .with('users')
                 .orderBy('random', 'desc')
-                .whereDoesntHave('users', (whereHasUsersCallback: WhereHasStatementCallback) => {
+                .whereDoesntHave('users', (whereHasUsersCallback: WhereDoesntHaveStatementCallback) => {
                     whereHasUsersCallback.where('random', '>', 5);
                 })
         })
         .get()
         .subscribe((projects) => {
             steps_taken ++;
-
             switch(step) {
                 case 0:
                     expect(projects.length).toBe(3);
