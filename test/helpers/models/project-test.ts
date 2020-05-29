@@ -1,12 +1,12 @@
 import {Model} from "../../../src/model/model";
-import {PrimaryKey} from "../../../src/model/decorators/primary-key";
 import {TaskTest} from "./task-test";
-import {HasMany} from "../../../src/model/decorators/relations/hasMany";
 import {Stamp} from "../../../src/model/decorators/model-stamp";
 import {ModelStamp} from "../../../src/model/stamp/model-stamp";
+import {PrimaryKey} from "../../../src/model/decorators/primary-key";
+import {HasMany} from "../../../src/object/relation/types/hasMany";
 
 export class ProjectTest extends Model {
-
+    
     public id: number;
 
     public name: string;
@@ -17,5 +17,5 @@ export class ProjectTest extends Model {
         return 'test';
     }
 
-    @Stamp() public modelStamp: ModelStamp;
+    // @Stamp() public modelStamp: ModelStamp;
 }

@@ -5,8 +5,15 @@ export class Ords {
 
     private rds: Rds;
 
-    public constructor(config: ModelConfig[]) {
+    public constructor(config?: ModelConfig[]) {
         this.rds = new Rds();
+
+        if (config) {
+            this.rds.config(config);
+        }
+    }
+
+    public addConfigs(config: ModelConfig[]) {
         this.rds.config(config);
     }
 
