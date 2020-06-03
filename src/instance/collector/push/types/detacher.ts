@@ -122,8 +122,12 @@ export class Detacher {
         let checked = false;
         let new_array = [];
 
-        for (const statement of statements) {
-            for (let object of data) {
+        for (let object of data) {
+
+            let new_model = null;
+
+            for (const statement of statements) {
+
                 // If a relation doesn't contain any of the collector keys in either the joinStatement or whereStatement
                 // we can continue;
                 // if (!this.relationHasKeys(statement)) { continue; } // todo this isn't working, we need to check for both object name as relation name, not only relation name.
@@ -131,7 +135,10 @@ export class Detacher {
                 const new_relation_data = this.checkRelationData(object, statement);
 
                 if (new_relation_data !== false) {
-                    let new_model = statement.getRelation().getLocalObject().createModel(object);
+
+                    if (!new_model) {
+                        new_model = statement.getRelation().getLocalObject().createModel(object);
+                    }
 
                     Object.defineProperty(new_model, statement.getRelation().getObjectName(), {
                         value: new_relation_data,
@@ -139,12 +146,15 @@ export class Detacher {
                         // writable: false
                     })
                     // new_model[statement.getRelation().getObjectName()] = new_relation_data;
-                    new_array.push(new_model);
 
                     checked = true;
-                } else {
-                    new_array.push(object);
                 }
+            }
+
+            if (new_model) {
+                new_array.push(new_model);
+            } else {
+                new_array.push(object);
             }
         }
 

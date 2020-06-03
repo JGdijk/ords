@@ -88,24 +88,33 @@ export class Remover {
         let checked = false;
         let new_array = [];
 
-        for (const statement of statements) {
-            for (let object of data) {
+        for (let object of data) {
+
+            let new_model = null;
+
+            for (const statement of statements) {
                 const new_relation_data =
                     this.checkRelationData(object[statement.getRelation().getObjectName()], statement);
                 if (new_relation_data !== false) {
-                    let new_model = statement.getRelation().getLocalObject().createModel(object);
+
+                    if (!new_model) {
+                        new_model = statement.getRelation().getLocalObject().createModel(object);
+                    }
 
                     Object.defineProperty(new_model, statement.getRelation().getObjectName(), {
                         value: new_relation_data,
                         enumerable: statement.getRelation().returnsMany(),
                     })
-                    new_array.push(new_model);
-
                     checked = true;
-                } else {
-                    new_array.push(object);
                 }
             }
+
+            if (new_model) {
+                new_array.push(new_model);
+            } else {
+                new_array.push(object);
+            }
+
         }
 
         if (checked) {

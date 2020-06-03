@@ -163,8 +163,12 @@ export class Updater {
         let checked = false;
         let new_array = [];
 
-        for (const statement of statements) {
-            for (let object of data) {
+
+        for (let object of data) {
+
+            let new_model = null;
+
+            for (const statement of statements) {
 
                 // If a relation doesn't contain any of the collector keys in either the joinStatement or whereStatement
                 // we can continue;
@@ -173,17 +177,24 @@ export class Updater {
                 const new_relation_data =
                     this.checkRelationData(object, statement);
                 if (new_relation_data !== false) {
-                    let new_model = this.pushController.getInstanceData().getObject().createModel(object);
+
+                    if (!new_model) {
+                        new_model = this.pushController.getInstanceData().getObject().createModel(object);
+                    }
+
                     Object.defineProperty(new_model, statement.getRelation().getObjectName(), {
                         value: new_relation_data,
                         enumerable: statement.getRelation().returnsMany(),
                     })
-                    new_array.push(new_model);
 
                     checked = true;
-                } else {
-                    new_array.push(object);
                 }
+            }
+
+            if (new_model) {
+                new_array.push(new_model);
+            } else {
+                new_array.push(object);
             }
         }
 
