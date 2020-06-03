@@ -93,12 +93,13 @@ export class Remover {
                 const new_relation_data =
                     this.checkRelationData(object[statement.getRelation().getObjectName()], statement);
                 if (new_relation_data !== false) {
-                    let new_object = Object.assign({}, object);
-                    Object.defineProperty(new_object, statement.getRelation().getObjectName(), {
+                    let new_model = statement.getRelation().getLocalObject().createModel(object);
+
+                    Object.defineProperty(new_model, statement.getRelation().getObjectName(), {
                         value: new_relation_data,
                         enumerable: statement.getRelation().returnsMany(),
                     })
-                    new_array.push(new_object);
+                    new_array.push(new_model);
 
                     checked = true;
                 } else {
@@ -148,7 +149,7 @@ export class Remover {
                         this.checkRelationData(object[relationStatement.getRelation().getObjectName()], relationStatement);
                     if (new_relation_data !== false) {
                         if (!new_object) {
-                            new_object = Object.assign({}, object);
+                            new_object = statement.getRelation().getLocalObject().createModel(object);
                         }
                         Object.defineProperty(new_object, relationStatement.getRelation().getObjectName(), {
                             value: new_relation_data,

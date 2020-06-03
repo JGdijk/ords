@@ -22,6 +22,9 @@ export class ObjectContainer {
     }
 
     public hasPretty(name: string) {
+
+        name = name.toLowerCase();
+
         for (const object of this.objects) {
             if (name === object.getPrettyName()) { return true; }
         }
