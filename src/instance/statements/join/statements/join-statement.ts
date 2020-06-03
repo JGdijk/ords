@@ -8,8 +8,12 @@ export class JoinStatement implements JoinStatementInterface {
 
     private relation: Relation;
 
+    private orderByStatementController: OrderByStatementController;
+
     constructor(relation: Relation) {
         this.relation = relation;
+
+        this.orderByStatementController = new OrderByStatementController(relation.getRelationObject().getPrimaryKey());
     }
 
     attach(object: any): void {
@@ -38,6 +42,8 @@ export class JoinStatement implements JoinStatementInterface {
     hasWhereStatements(): boolean { return false; }
     getWhereStatementController(): WhereStatementController { return null; }
     hasOrderByStatements(): boolean { return false; }
-    getOrderByStatementController(): OrderByStatementController { return null; }
+    getOrderByStatementController(): OrderByStatementController {
+        return this.orderByStatementController;
+    }
     getJoinStatementController(): JoinStatementController { return null; }
 }
