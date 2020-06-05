@@ -6,7 +6,7 @@ export type RelationConfig = {
     name: string;
     model_name: string;
     type: string; // todo make enum
-    returns_many: boolean;
+    returns_many: boolean; // todo should be in the type
 }
 
 export abstract class Relation {

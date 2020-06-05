@@ -76,6 +76,7 @@ export class RdsObject {
                 [relation.getObjectName()]: {
                     configurable: true,
                     get: function () {
+                        console.log('fout');
                         return relation.findByObject(this);
                     },
                     set: function () {
@@ -149,6 +150,7 @@ export class RdsObject {
             for (const key of Object.keys(object)) {
 
                 // if the object doesn't contain this key continue.
+
 
                 if(!this.getRelationContainer().hasByObjectName(key)) { continue; }
 

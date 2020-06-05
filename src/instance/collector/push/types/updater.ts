@@ -345,8 +345,7 @@ export class Updater {
                     // we can continue;
                     if (!this.relationHasKeys(relationStatement)) { continue; }
 
-                    const new_relation_data =
-                        this.checkRelationData(relationObject, relationStatement);
+                    const new_relation_data = this.checkRelationData(relationObject, relationStatement);
                     if (new_relation_data !== false) {
                         if (!new_model) {
                             new_model = statement.getRelation().getRelationObject().createModel(relationObject);

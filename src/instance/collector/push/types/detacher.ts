@@ -167,7 +167,7 @@ export class Detacher {
 
     private checkRelationData(object: any, statement: JoinStatementInterface): any | boolean {
 
-        return (object === null || !Array.isArray(object[statement.getRelation().getObjectName()]))
+        return (object === null || !statement.getRelation().returnsMany())
             ? this.checkRelationDataObject(object, statement)
             : this.checkRelationDataArray(object, statement);
     }
@@ -190,7 +190,7 @@ export class Detacher {
             object[local_pk],
             statement.getRelation().getModelName()
         );
-        if (relation_ids_to_detach) {
+        if (relation_ids_to_detach.length) {
             if (statement.hasWhereStatements()) {
                 let objects_to_detach = statement.getRelation().getRelationObject().find(relation_ids_to_detach);
                 objects_to_detach = statement.getWhereStatementController().filter(objects_to_detach);
@@ -198,7 +198,9 @@ export class Detacher {
             }
         }
 
+
         for (let relationObject of object[statement.getRelation().getObjectName()]) {
+
 
             // We check if the object should now be EXCLUDED because it has a where has statement.
             if (has_where_has) {
@@ -294,8 +296,10 @@ export class Detacher {
                 object[local_pk],
                 statement.getRelation().getModelName()
             );
+
             // It's a single relation if there is a result it needs to be detached
-            if (relation_ids_to_detach) { return null; }
+            if (relation_ids_to_detach.length) { return null; }
+
 
             // We check if the object should now be EXCLUDED because it has a where has statement.
             if (statement.hasWhereStatements() && this.checkWhereHasByKeys(statement.getWhereStatementController())) {

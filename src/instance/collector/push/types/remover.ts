@@ -149,13 +149,11 @@ export class Remover {
             }
 
             let new_object = null;
-            let relation_checked = false;
 
             if (statement.hasStatements()) {
                 const relationStatements = statement.getStatements();
                 for (const relationStatement of relationStatements) {
-                    const new_relation_data =
-                        this.checkRelationData(object[relationStatement.getRelation().getObjectName()], relationStatement);
+                    const new_relation_data = this.checkRelationData(object[relationStatement.getRelation().getObjectName()], relationStatement);
                     if (new_relation_data !== false) {
                         if (!new_object) {
                             new_object = statement.getRelation().getLocalObject().createModel(object);
@@ -169,8 +167,7 @@ export class Remover {
                 }
             }
 
-            if (relation_checked) {
-                checked = true;
+            if (new_object) {
                 new_relation_array.push(new_object);
             } else {
                 new_relation_array.push(object);
