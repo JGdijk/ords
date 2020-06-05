@@ -184,7 +184,7 @@ export class Updater {
 
                     Object.defineProperty(new_model, statement.getRelation().getObjectName(), {
                         value: new_relation_data,
-                        enumerable: statement.getRelation().returnsMany(),
+                        enumerable: true,
                     })
 
                     checked = true;
@@ -266,7 +266,7 @@ export class Updater {
                         new_model = statement.getRelation().getRelationObject().createModel(relationObject);
                         Object.defineProperty(new_model, relationStatement.getRelation().getObjectName(), {
                             value: new_relation_data,
-                            enumerable: relationStatement.getRelation().returnsMany(),
+                            enumerable: true,
                         })
                     }
                 }
@@ -352,8 +352,7 @@ export class Updater {
                         }
                         Object.defineProperty(new_model, relationStatement.getRelation().getObjectName(), {
                             value: new_relation_data,
-                            enumerable: relationStatement.getRelation().returnsMany(),
-                            // writable: true
+                            enumerable: true,
                         })
                     }
                 }

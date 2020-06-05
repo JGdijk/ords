@@ -19,8 +19,7 @@ export class JoinStatement implements JoinStatementInterface {
     attach(object: any): void {
         Object.defineProperty(object, this.relation.getObjectName(), {
             value: this.relation.findByObject(object, true),
-            enumerable: this.relation.returnsMany()
-            // writable: false
+            enumerable: true
         });
     }
 

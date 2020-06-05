@@ -55,7 +55,7 @@ export class JoinCallbackStatement implements JoinStatementInterface {
 
             Object.defineProperty(object, this.relation.getObjectName(), {
                 value: model,
-                enumerable: this.relation.returnsMany()
+                enumerable: true
             })
 
             return;

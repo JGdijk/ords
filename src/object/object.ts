@@ -74,7 +74,6 @@ export class RdsObject {
         for (const relation of this.relationContainer.get()) {
             Object.defineProperties(this.model_constructor.prototype, {
                 [relation.getObjectName()]: {
-                    configurable: true,
                     get: function () {
                         console.log('fout');
                         return relation.findByObject(this);
@@ -155,8 +154,14 @@ export class RdsObject {
                 if(!this.getRelationContainer().hasByObjectName(key)) { continue; }
 
                 //add relation
-                const relation = object[key];
-                this.getRelationContainer().findByObjectName(key).add(object[this.primary_key], relation, collector);
+                const relation_object = object[key];
+
+                const relation = this.getRelationContainer().findByObjectName(key)
+
+                if ((relation.returnsMany() && relation_object.length) || (!relation.returnsMany() && relation_object)) {
+                    relation.add(object[this.primary_key], relation_object, collector);
+                }
+
 
                 // remove the relation from the object.
                 delete object[key];
@@ -264,7 +269,7 @@ export class RdsObject {
             for (const relation of relations) {
                 Object.defineProperty(new_model, relation.relation.getObjectName(), {
                     value: relation.value,
-                    enumerable: relation.relation.returnsMany(),
+                    enumerable: true,
                     writable: true
                 })
             }

@@ -142,8 +142,7 @@ export class Detacher {
 
                     Object.defineProperty(new_model, statement.getRelation().getObjectName(), {
                         value: new_relation_data,
-                        enumerable: statement.getRelation().returnsMany()
-                        // writable: false
+                        enumerable: true
                     })
                     // new_model[statement.getRelation().getObjectName()] = new_relation_data;
 
@@ -236,7 +235,7 @@ export class Detacher {
                         }
                         Object.defineProperty(new_model, relationStatement.getRelation().getObjectName(), {
                             value: new_relation_data,
-                            enumerable: relationStatement.getRelation().returnsMany(),
+                            enumerable: true,
                         })
                     }
                 }
@@ -326,7 +325,7 @@ export class Detacher {
                         }
                         Object.defineProperty(new_model, relationStatement.getRelation().getObjectName(), {
                             value: new_relation_data,
-                            enumerable: relationStatement.getRelation().returnsMany(),
+                            enumerable: true,
                         })
                     }
                 }

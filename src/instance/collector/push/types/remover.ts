@@ -93,8 +93,8 @@ export class Remover {
             let new_model = null;
 
             for (const statement of statements) {
-                const new_relation_data =
-                    this.checkRelationData(object[statement.getRelation().getObjectName()], statement);
+                const new_relation_data = this.checkRelationData(object[statement.getRelation().getObjectName()], statement);
+
                 if (new_relation_data !== false) {
 
                     if (!new_model) {
@@ -103,7 +103,7 @@ export class Remover {
 
                     Object.defineProperty(new_model, statement.getRelation().getObjectName(), {
                         value: new_relation_data,
-                        enumerable: statement.getRelation().returnsMany(),
+                        enumerable: true,
                     })
                     checked = true;
                 }
@@ -116,6 +116,8 @@ export class Remover {
             }
 
         }
+
+
 
         if (checked) {
             this.checked = true;
@@ -143,6 +145,7 @@ export class Remover {
         let new_relation_array = [];
 
         for (const object of objects) {
+
             if (ids_to_remove.includes(object[pk])) {
                 checked = true;
                 continue;
@@ -150,20 +153,18 @@ export class Remover {
 
             let new_object = null;
 
-            if (statement.hasStatements()) {
-                const relationStatements = statement.getStatements();
-                for (const relationStatement of relationStatements) {
-                    const new_relation_data = this.checkRelationData(object[relationStatement.getRelation().getObjectName()], relationStatement);
-                    if (new_relation_data !== false) {
-                        if (!new_object) {
-                            new_object = statement.getRelation().getLocalObject().createModel(object);
-                        }
-                        Object.defineProperty(new_object, relationStatement.getRelation().getObjectName(), {
-                            value: new_relation_data,
-                            enumerable: relationStatement.getRelation().returnsMany(),
-                        })
-                        checked = true;
+            for (const relationStatement of statement.getStatements()) {
+                const new_relation_data = this.checkRelationData(object[relationStatement.getRelation().getObjectName()], relationStatement);
+                if (new_relation_data !== false) {
+
+                    if (!new_object) {
+                        new_object = relationStatement.getRelation().getLocalObject().createModel(object);
                     }
+                    Object.defineProperty(new_object, relationStatement.getRelation().getObjectName(), {
+                        value: new_relation_data,
+                        enumerable: true,
+                    })
+                    checked = true;
                 }
             }
 
@@ -177,7 +178,6 @@ export class Remover {
         if (checked) {
             this.checked = true;
             this.pushController.setChecked();
-            if (!checked) { return false; }
 
             return (!statement.hasOrderByStatements())
                 ? new_relation_array
@@ -211,11 +211,12 @@ export class Remover {
             if (new_relation_data === false) { continue; }
 
             if (!new_object) {
-                new_object = Object.assign({}, object);
+                new_object = relationStatement.getRelation().getLocalObject().createModel(object);
             }
+
             Object.defineProperty(new_object, relationStatement.getRelation().getObjectName(), {
                 value: new_relation_data,
-                enumerable: relationStatement.getRelation().returnsMany(),
+                enumerable: true,
             })
             relation_checked = true;
         }
