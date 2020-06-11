@@ -29,7 +29,7 @@ export class JoinCallbackStatement implements JoinStatementInterface {
         let relation_objects = this.relation.findByObject(object);
 
         // Returns if null or []
-        if (!relation_objects || !relation_objects.length) {
+        if ((!this.relation.returnsMany() && !relation_objects) || (this.relation.returnsMany() && !relation_objects.length)) {
             Object.defineProperty(object, this.relation.getObjectName(), {
                 value: relation_objects,
                 enumerable: this.relation.returnsMany()
