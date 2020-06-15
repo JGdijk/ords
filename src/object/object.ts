@@ -384,6 +384,58 @@ export class RdsObject {
                     ids_array
                 )
             };
+
+            addRelation (relation: string, object: any | any[]): void {
+                const pk = self.getPrimaryKey();
+
+                if (!this.hasOwnProperty(pk)) {
+                    // todo error can't update
+                    return;
+                }
+                if (!self.has(this[pk])) {
+                    // todo error object doesn't exist
+                    return;
+                }
+
+                if (!self.getRelationContainer().hasByObjectName(relation)) {
+                    // todo error;
+                    return;
+                }
+
+                const relation_model_name = self
+                    .getRelationContainer()
+                    .findByObjectName(relation)
+                    .getModelName();
+                const relation_pk = self
+                    .getRelationContainer()
+                    .findByObjectName(relation)
+                    .getRelationObject()
+                    .getPrimaryKey();
+
+                const objects_array: any = (!Array.isArray(object)) ? [object] : object;
+
+                self.rds.holdInternally();
+
+                self.rds.add(relation_model_name, objects_array);
+
+                for (const relation_object of objects_array) {
+
+                    if (!relation_object.hasOwnProperty(relation_pk)) {
+                        // todo maybe error?
+                        continue;
+                    }
+
+                    self.rds.attach(
+                        self.getModelName(),
+                        relation,
+                        this[pk],
+                        relation_object[relation_pk]
+                    )
+                }
+
+                self.rds.continueInternally();
+
+            };
         };
 
         this.model_constructor = classes[this.getModelName()];

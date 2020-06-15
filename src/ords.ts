@@ -20,4 +20,12 @@ export class Ords {
     public use(name: string): InstanceController {
         return this.rds.getObjectContainer().findPretty(name).instanceController();
     }
+
+    public hold(): void {
+        this.rds.holdExternally();
+    }
+
+    public continue(): void {
+        this.rds.continueExternally();
+    }
 }

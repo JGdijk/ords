@@ -1,13 +1,8 @@
-import {Relation, RelationConfig} from "../relation";
-import {Rds} from "../../../rds";
-
+import {Relation} from "../relation";
 
 export class HasMany extends Relation {
 
-    protected is_silent: boolean;
+    protected is_silent: false;
 
-    constructor(config: RelationConfig, local_name: string, rds: Rds) {
-        super(config, local_name, rds);
-        this.is_silent = false;
-    }
+    protected returns_many = true;
 }

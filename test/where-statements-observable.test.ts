@@ -1,6 +1,5 @@
 import {Ords} from "../src/ords";
 import {ProjectTest} from "./helpers/models/project-test";
-import {WhereStatementCallback} from "../src/instance/statements/where/statements/callback/where/where-statement-callback";
 
 const ords = new Ords([
     {name: 'project', model: ProjectTest}

@@ -9,13 +9,13 @@ import {AddressTest} from "./helpers/models/address-test";
 
 const ords = new Ords([
     {name: 'project', model: ProjectTest, relations: [
-            {name: 'tasks', model_name: 'task', returns_many: true, type: 'hasMany'}
+            {name: 'tasks', model_name: 'task', type: 'hasMany'}
         ]},
     {name: 'task', model: TaskTest, primaryKey: 'task_id', relations: [
-            {name: 'users', model_name: 'user', returns_many: true, type: 'hasMany'}
+            {name: 'users', model_name: 'user', type: 'hasMany'}
         ]},
     {name: 'user', model: UserTest, relations: [
-            {name: 'address', model_name: 'address', returns_many: false, type: 'hasOne'}
+            {name: 'address', model_name: 'address', type: 'hasOne'}
         ]},
     {name: 'address', model: AddressTest}
 ]);
@@ -202,10 +202,10 @@ test('complex-relation-where-has', done => {
 
 const ords2 = new Ords([
     {name: 'project', model: ProjectTest, relations: [
-            {name: 'tasks', model_name: 'task', returns_many: true, type: 'hasMany'}
+            {name: 'tasks', model_name: 'task', type: 'hasMany'}
         ]},
     {name: 'task', model: TaskTest, primaryKey: 'task_id', relations: [
-            {name: 'users', model_name: 'user', returns_many: true, type: 'hasMany'}
+            {name: 'users', model_name: 'user', type: 'hasMany'}
         ]},
     {name: 'user', model: UserTest}
 ]);

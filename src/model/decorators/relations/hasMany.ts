@@ -12,7 +12,6 @@ export function HasMany(config: HasManyConfig) {
             name: key,
             model_name: config.model.name, //todo name guessing
             type: 'hasMany',
-            returns_many: true
         };
         modelDecoratorBag.addRelation(target.constructor.name, relationConfig);
     }

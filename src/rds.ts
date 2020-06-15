@@ -21,9 +21,18 @@ export class Rds {
 
     private broadcaster: any; //todo type
 
+    private hold_externally: boolean;
+
+    private hold_internally: boolean;
+
+    private collector: Collector;
+
     constructor() {
         this.objectContainer = new ObjectContainer();
         this.initBroadcasting();
+
+        this.hold_externally = false;
+        this.hold_internally = false;
     }
 
     public config(configs: ModelConfig[]) {
@@ -53,25 +62,25 @@ export class Rds {
 
     //todo type
     public add(key: string, objects): void {
-        const collector = new Collector();
+        const collector = this.getCollector();
         this.getObjectContainer().find(key).add(objects, collector);
-        this.observer.next(collector);
+        this.pushChecker(collector);
     }
 
     public update(key: string, ids: number | string | number[] | string[], data: any): void {
-        const collector = new Collector();
+        const collector = this.getCollector();
         this.getObjectContainer().find(key).update(ids, data, collector);
-        this.observer.next(collector);
+        this.pushChecker(collector);
     }
 
     public remove(key: string, ids): void {
-        const collector = new Collector();
+        const collector = this.getCollector();
         this.getObjectContainer().find(key).remove(ids, collector);
-        this.observer.next(collector);
+        this.pushChecker(collector);
     }
 
     public attach(key: string, relation: string, key_ids: string[] | number[], relation_ids: string[] | number[]): void {
-        const collector = new Collector();
+        const collector = this.getCollector();
         //todo check if relation exists error?
         if (!this.getObjectContainer().find(key).getRelationContainer().hasByObjectName(relation)) { return; }
 
@@ -81,19 +90,49 @@ export class Rds {
             .findByObjectName(relation)
             .attach(key_ids, relation_ids, collector);
 
-        this.observer.next(collector);
+        this.pushChecker(collector);
     }
 
     public detach(key: string, relation: string, key_ids: string[] | number[], relation_ids: string[] | number[]): void {
-        const collector = new Collector();
+        const collector = this.getCollector();
         //todo check if relation exists error?
         if (!this.getObjectContainer().find(key).getRelationContainer().hasByObjectName(relation)) { return; }
+
         this.getObjectContainer()
             .find(key)
             .getRelationContainer()
             .findByObjectName(relation)
             .detach(key_ids, relation_ids, collector);
-        this.observer.next(collector);
+
+        this.pushChecker(collector);
+    }
+
+    public holdInternally(): void {
+        this.hold_internally = true;
+    }
+
+    public holdExternally() : void {
+        this.hold_externally = true;
+    }
+
+    public continueInternally(): void {
+        if (!this.hold_internally || this.hold_externally || !this.collector) {
+            return;
+        }
+
+        this.observer.next(this.collector);
+
+        this.collector = null;
+    }
+
+    public continueExternally(): void {
+        if (!this.hold_externally || !this.collector) {
+            return;
+        }
+
+        this.observer.next(this.collector);
+
+        this.collector = null;
     }
 
     public getBroadcaster(): any { //todo type
@@ -105,6 +144,36 @@ export class Rds {
             this.observer = observer;
         }).pipe( publish() );
         this.broadcaster.connect();
+    }
+
+    private getCollector(): Collector {
+        if (this.collector) {
+            return this.collector;
+        }
+
+        const collector = new Collector();
+
+        if (this.pushIsOnHold() && !this.collector) {
+            this.collector = collector;
+        }
+
+        return collector;
+    }
+
+    private pushChecker(collector) {
+        if (this.pushIsOnHold()) {
+            return;
+        }
+
+        this.observer.next(collector);
+
+        if (this.collector) {
+            this.collector = null;
+        }
+    }
+
+    private pushIsOnHold(): boolean {
+        return this.hold_internally || this.hold_externally;
     }
 }
 

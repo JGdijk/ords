@@ -11,7 +11,6 @@ export function HasOne(config: HasOneConfig) {
             name: key,
             model_name: config.model.name,
             type: 'hasOne',
-            returns_many: false
         };
         modelDecoratorBag.addRelation(target.constructor.name, relationConfig);
     }

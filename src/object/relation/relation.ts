@@ -6,7 +6,6 @@ export type RelationConfig = {
     name: string;
     model_name: string;
     type: string; // todo make enum
-    returns_many: boolean; // todo should be in the type
 }
 
 export abstract class Relation {
@@ -29,10 +28,9 @@ export abstract class Relation {
 
     protected abstract is_silent: boolean;
 
-    protected constructor(config: RelationConfig, local_name: string, rds: Rds){
+    public constructor(config: RelationConfig, local_name: string, rds: Rds){
         this.model_name = config.model_name;
         this.object_name = config.name;
-        this.returns_many = config.returns_many;
 
         this.data = new Map();
         this.local_name = local_name;
@@ -51,7 +49,6 @@ export abstract class Relation {
                 name: this.local_name,
                 model_name: this.local_name,
                 type: 'silent',
-                returns_many: false,
             },
             this.relationRdsObject.getPrettyName(),
             this.rds
