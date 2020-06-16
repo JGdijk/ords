@@ -308,8 +308,8 @@ export class RdsObject {
 
         const self = this;
 
-        let classes = {};
-        classes[this.getModelName()] = class extends constructor {
+        let Model = {};
+        Model[this.getPrettyName()] = class extends constructor {
             constructor(data?: any) {
                 super(data);
             }
@@ -442,7 +442,7 @@ export class RdsObject {
             };
         };
 
-        this.model_constructor = classes[this.getModelName()];
+        this.model_constructor = Model[this.getPrettyName()];
     }
 
     private setPrimaryKey(instance: Instance | null): void {

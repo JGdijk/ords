@@ -62,7 +62,6 @@ export class WhereStatementCallback {
 
     public whereHas(key: string, callback?: any): WhereStatementCallback {
         //todo checks if relation is not found
-        console.log(this.statement.getObject());
         const relation = this.statement.getObject().getRelationContainer().findByObjectName(key);
 
         if (callback) {

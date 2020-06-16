@@ -263,7 +263,11 @@ export class Updater {
                     const new_relation_data =
                         this.checkRelationData(relationObject, relationStatement);
                     if (new_relation_data !== false) {
-                        new_model = statement.getRelation().getRelationObject().createModel(relationObject);
+
+                        if (!new_model) {
+                            new_model = statement.getRelation().getRelationObject().createModel(relationObject);
+                        }
+
                         Object.defineProperty(new_model, relationStatement.getRelation().getObjectName(), {
                             value: new_relation_data,
                             enumerable: true,

@@ -239,6 +239,7 @@ export class Attacher {
             object[local_pk],
             statement.getRelation().getModelName()
         );
+
         if (relation_ids_to_attach.length) {
             let new_relation_objects = statement.getRelation().getRelationObject().find(relation_ids_to_attach);
             if (statement.hasWhereStatements()) {
@@ -318,8 +319,7 @@ export class Attacher {
                     // whereStatement we can continue.
                     // if (!this.relationHasKeys(relationStatement)) { continue; } // todo this isn't working, we need to check for both object name as relation name, not only relation name.
 
-                    const new_relation_data =
-                        this.checkRelationData(relationObject, relationStatement);
+                    const new_relation_data = this.checkRelationData(relationObject, relationStatement);
                     if (new_relation_data !== false) {
                         if (!new_model) {
                             new_model = relationStatement.getRelation().getLocalObject().createModel(relationObject);

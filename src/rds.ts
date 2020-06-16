@@ -120,9 +120,9 @@ export class Rds {
             return;
         }
 
-        this.observer.next(this.collector);
+        this.hold_internally = false;
 
-        this.collector = null;
+        this.pushChecker(this.collector);
     }
 
     public continueExternally(): void {
@@ -130,9 +130,9 @@ export class Rds {
             return;
         }
 
-        this.observer.next(this.collector);
+        this.hold_externally = false;
 
-        this.collector = null;
+        this.pushChecker(this.collector);
     }
 
     public getBroadcaster(): any { //todo type
