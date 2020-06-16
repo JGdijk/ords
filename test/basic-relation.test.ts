@@ -69,7 +69,15 @@ test('simple-relation-observable', done => {
                 steps_taken ++;
                 expect(projects.length).toBe(3);
                 expect(projects[0].tasks.length).toBe(2);
+
+
+                step = 4;
+                projects[0].addRelation('tasks',   {task_id: 99, name: 'task-99'})
                 break;
+            case 4:
+                steps_taken ++;
+                expect(projects[0].tasks.length).toBe(3);
+                expect(projects[0].tasks[2]).toMatchObject({task_id: 99, name: 'task-99'});
         }
     });
 
@@ -82,7 +90,7 @@ test('simple-relation-observable', done => {
     step = 3;
     projectOrds.detach(1, 'tasks', [3,4]);
 
-    expect(steps_taken).toBe(4);
+    expect(steps_taken).toBe(5);
     done();
     subscription.unsubscribe();
 

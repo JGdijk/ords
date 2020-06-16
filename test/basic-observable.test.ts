@@ -17,11 +17,13 @@ projectOrds.add([
 test('simple-add-observable', done => {
 
     let step = 0;
+    let steps_taken = 0;
 
     let subscription = projectOrds.get().subscribe((projects) => {
 
         switch(step) {
             case 0:
+                steps_taken ++;
                 expect(projects.length).toBe(3);
                 expect(projects).toMatchObject([
                     {id: 1, name: 'project-1'},
@@ -30,6 +32,7 @@ test('simple-add-observable', done => {
                 ]);
                 break;
             case 1:
+                steps_taken ++;
                 expect(projects.length).toBe(4);
                 expect(projects).toMatchObject([
                     {id: 1, name: 'project-1'},
@@ -39,6 +42,7 @@ test('simple-add-observable', done => {
                 ]);
                 break;
             case 2:
+                steps_taken ++;
                 expect(projects.length).toBe(4);
                 expect(projects).toMatchObject([
                     {id: 1, name: 'project-1a'},
@@ -48,6 +52,7 @@ test('simple-add-observable', done => {
                 ]);
                 break;
             case 3:
+                steps_taken ++;
                 expect(projects.length).toBe(4);
                 expect(projects).toMatchObject([
                     {id: 1, name: 'project-1a'},
@@ -57,6 +62,7 @@ test('simple-add-observable', done => {
                 ]);
                 break;
             case 4:
+                steps_taken ++;
                 expect(projects.length).toBe(4);
                 expect(projects).toMatchObject([
                     {id: 1, name: 'project-1a'},
@@ -66,6 +72,7 @@ test('simple-add-observable', done => {
                 ]);
                 break;
             case 5:
+                steps_taken ++;
                 expect(projects.length).toBe(3);
                 expect(projects).toMatchObject([
                     {id: 2, name: 'similar_name'},
@@ -74,8 +81,18 @@ test('simple-add-observable', done => {
                 ]);
                 break;
             case 6:
+                steps_taken ++;
                 expect(projects.length).toBe(0);
                 break;
+            case 7:
+                steps_taken ++;
+                expect(projects.length).toBe(4);
+                expect(projects).toMatchObject([
+                    {id: 1, name: 'project-1'},
+                    {id: 2, name: 'project-2'},
+                    {id: 3, name: 'project-3'},
+                    {id: 4, name: 'project-4'}
+                ]);
         }
 
     });
@@ -97,6 +114,17 @@ test('simple-add-observable', done => {
 
     step = 6;
     projectOrds.remove([2,3,4]);
+
+
+    step = 7;
+    ords.hold();
+    projectOrds.add({id: 1, name: 'project-1'});
+    projectOrds.add({id: 2, name: 'project-2'});
+    projectOrds.add({id: 3, name: 'project-3'});
+    projectOrds.add({id: 4, name: 'project-4'});
+    ords.continue();
+
+    expect(steps_taken).toBe(8);
 
     done();
     subscription.unsubscribe();

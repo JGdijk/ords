@@ -5,7 +5,7 @@ import {ObjectData} from "./object-data";
 import {InstanceController} from "../instance/instance-controller";
 import {Collector} from "../instance/collector/collector";
 import {Instance} from "../model/decorators/bag/instance";
-import {Relation} from "./relation/relation";
+
 export class RdsObject {
 
     private pretty_name: string;
@@ -48,6 +48,7 @@ export class RdsObject {
         // console.log(parent.name);
         // this.parent = (funcNameRegex).exec(parent.constructor.toString())[1].toLowerCase();
 
+        // this.model_constructor = config.model;
         this.setModelConstructor(config.model);
 
         this.config = config;
@@ -418,20 +419,23 @@ export class RdsObject {
 
                 self.rds.add(relation_model_name, objects_array);
 
+                let relation_ids = [];
+
                 for (const relation_object of objects_array) {
 
                     if (!relation_object.hasOwnProperty(relation_pk)) {
                         // todo maybe error?
                         continue;
                     }
-
-                    self.rds.attach(
-                        self.getModelName(),
-                        relation,
-                        this[pk],
-                        relation_object[relation_pk]
-                    )
+                    relation_ids.push(relation_object[relation_pk]);
                 }
+
+                self.rds.attach(
+                    self.getModelName(),
+                    relation,
+                    [this[pk]],
+                    relation_ids
+                )
 
                 self.rds.continueInternally();
 

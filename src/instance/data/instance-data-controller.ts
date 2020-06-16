@@ -117,7 +117,6 @@ export class InstanceDataController {
     }
 
     private push(collector: Collector): boolean {
-
         const collectorCheckResult = collector.check(this.data);
 
         if (collectorCheckResult.shouldPush()) {
