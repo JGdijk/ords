@@ -1,6 +1,6 @@
 {
   "name": "ords",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "ords package",
   "main": "dist/index.js",
   "scripts": {

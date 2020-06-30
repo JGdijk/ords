@@ -116,21 +116,29 @@ export class Rds {
     }
 
     public continueInternally(): void {
-        if (!this.hold_internally || this.hold_externally || !this.collector) {
+        if (!this.hold_internally) {
             return;
         }
 
         this.hold_internally = false;
 
+        if (this.hold_externally || !this.collector) {
+            return;
+        }
+
         this.pushChecker(this.collector);
     }
 
     public continueExternally(): void {
-        if (!this.hold_externally || !this.collector) {
+        if (!this.hold_externally) {
             return;
         }
 
         this.hold_externally = false;
+
+        if (!this.collector) {
+            return;
+        }
 
         this.pushChecker(this.collector);
     }
