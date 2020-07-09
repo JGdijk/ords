@@ -40,7 +40,7 @@ export class WhereNoneHaveStatementCallbackStatement implements WhereStatementIn
     }
 
     public has(key : string): boolean {
-        if (this.relation.getRelationObject().getModelName() === key) { return true; }
+        if (this.relation.getRelationObject().getPrettyName() === key) { return true; }
         return this.whereStatementController.has(key);
     }
 

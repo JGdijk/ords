@@ -42,7 +42,7 @@ export class Adder {
     }
 
     private processTarget(): void {
-        const key = this.pushController.getInstanceData().getObject().getModelName();
+        const key = this.pushController.getInstanceData().getObject().getPrettyName();
 
         // if the collector doesn't contain any target data we can skip
         if (!this.collector.has(key)) { return; }

@@ -48,7 +48,7 @@ export class RelationContainer {
 
     public findByModelName(key: string): Relation {
         for (const relation of this.relations) {
-            if (key === relation.getModelName()) {
+            if (key === relation.getPrettyName()) {
                 return relation;
             }
         }
@@ -66,7 +66,7 @@ export class RelationContainer {
 
     public hasByModelName(key: string): boolean {
         for (const relation of this.relations) {
-            if (key === relation.getModelName()) {
+            if (key === relation.getPrettyName()) {
                 return true;
             }
         }

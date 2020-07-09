@@ -9,46 +9,46 @@ class ModelDecoratorBag {
         this.instances = [];
     }
 
-    private add(name: string): void {
-        const instance = new Instance(name);
+    private add(model: any): void {
+        const instance = new Instance(model);
         this.instances.push(instance);
     }
 
-    public has(target: string): boolean {
+    public has(target: any): boolean {
         for (const instance of this.instances) {
-            if (instance.name === target) { return true; }
+            if (instance.model === target) { return true; }
         }
         return false;
     }
 
-    public get(target: string): Instance {
+    public get(target: any): Instance {
         for (const instance of this.instances) {
-            if (instance.name === target) { return instance; }
+            if (instance.model === target) { return instance; }
         }
         return null;
     }
 
-    public setPrimaryKey(target: string, primary_key: string): void {
+    public setPrimaryKey(target: any, primary_key: string): void {
         if (!this.has(target)) { this.add(target); }
         this.get(target).setPrimaryKey(primary_key);
     }
 
-    public addDate(target: string, key: string): void {
+    public addDate(target: any, key: string): void {
         if (!this.has(target)) { this.add(target); }
         this.get(target).addDate(key);
     }
 
-    public addStringifyObject(target: string, key: string): void {
+    public addStringifyObject(target: any, key: string): void {
         if (!this.has(target)) { this.add(target); }
         this.get(target).addStringifyObject(key);
     }
 
-    public addRelation(target: string, config: RelationConfig): void {
+    public addRelation(target: any, config: RelationConfig): void {
         if (!this.has(target)) { this.add(target); }
         this.get(target).addRelation(config);
     }
 
-    public setModelStamp(target: string, key: string): void {
+    public setModelStamp(target: any, key: string): void {
         if (!this.has(target)) { this.add(target); }
         this.get(target).setModelStamp(key);
     }

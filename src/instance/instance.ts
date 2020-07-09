@@ -231,7 +231,7 @@ export class Instance implements InstanceInterface {
             object_ids.push(object[this.object.getPrimaryKey()]);
         }
 
-        this.rds.update(this.object.getModelName(), object_ids, data);
+        this.rds.update(this.object.getPrettyName(), object_ids, data);
     }
 
     public remove(ids_in?: number | string | number[] | string): void {
@@ -253,7 +253,7 @@ export class Instance implements InstanceInterface {
                 // throw error
                 return;
             }
-            this.rds.remove(this.object.getModelName(), ids);
+            this.rds.remove(this.object.getPrettyName(), ids);
         }
 
         let objects: any[] = this.object.get();
@@ -268,7 +268,7 @@ export class Instance implements InstanceInterface {
             object_ids.push(object[this.object.getPrimaryKey()]);
         }
 
-        this.rds.remove(this.object.getModelName(), object_ids);
+        this.rds.remove(this.object.getPrettyName(), object_ids);
     }
 
     public attach(ids: number | string | number[] | string[],
@@ -281,7 +281,7 @@ export class Instance implements InstanceInterface {
 
         const object_ids_array: any[] = (Array.isArray(ids)) ? ids : [ids];
 
-        this.rds.attach(this.object.getModelName(), relation_name, object_ids_array, relation_ids_array);
+        this.rds.attach(this.object.getPrettyName(), relation_name, object_ids_array, relation_ids_array);
     }
 
     public detach(ids: number | string | number[] | string[],
@@ -299,7 +299,7 @@ export class Instance implements InstanceInterface {
 
         const object_ids_array: any[] = (Array.isArray(ids)) ? ids : [ids];
 
-        this.rds.detach(this.object.getModelName(), relation_name, object_ids_array, relation_ids_array);
+        this.rds.detach(this.object.getPrettyName(), relation_name, object_ids_array, relation_ids_array);
     }
 
 }

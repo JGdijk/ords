@@ -18,18 +18,18 @@ export class WhereHasStatementCallbackStatement implements WhereStatementInterfa
     }
 
     public has(key : string): boolean {
-        if (this.relation.getRelationObject().getModelName() === key) { return true; }
+        if (this.relation.getRelationObject().getPrettyName() === key) { return true; }
         return this.whereStatementController.has(key);
     }
 
     public hasWhereHas(key?: string): boolean {
         if (!key) { return true; }
-        if (key === this.relation.getModelName()) { return true; }
+        if (key === this.relation.getPrettyName()) { return true; }
         return this.whereStatementController.has(key);
     }
 
     public hasWhereHasComplicated(key: string): boolean {
-        if (key === this.relation.getModelName()) { return true; }
+        if (key === this.relation.getPrettyName()) { return true; }
         return this.whereStatementController.has(key);
     }
 

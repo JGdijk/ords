@@ -185,9 +185,9 @@ export class Detacher {
         const pk = statement.getRelation().getRelationObject().getPrimaryKey();
 
         let relation_ids_to_detach: any = this.collector.find( // todo type conflict later on.
-            statement.getRelation().getLocalObject().getModelName(),
+            statement.getRelation().getLocalObject().getPrettyName(),
             object[local_pk],
-            statement.getRelation().getModelName()
+            statement.getRelation().getPrettyName()
         );
         if (relation_ids_to_detach.length) {
             if (statement.hasWhereStatements()) {
@@ -291,9 +291,9 @@ export class Detacher {
 
             // we check if the collector has any ids
             let relation_ids_to_detach: any = this.collector.find( // todo type conflict later on.
-                statement.getRelation().getLocalObject().getModelName(),
+                statement.getRelation().getLocalObject().getPrettyName(),
                 object[local_pk],
-                statement.getRelation().getModelName()
+                statement.getRelation().getPrettyName()
             );
 
             // It's a single relation if there is a result it needs to be detached

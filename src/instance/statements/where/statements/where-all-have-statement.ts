@@ -26,7 +26,7 @@ export class WhereAllHaveStatement implements WhereStatementInterface {
     }
 
     public has(key : string): boolean {
-        return (this.relation.getRelationObject().getModelName() === key);
+        return (this.relation.getRelationObject().getPrettyName() === key);
     }
 
     public hasWhereHas(key?: string): boolean {

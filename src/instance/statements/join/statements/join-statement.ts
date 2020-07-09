@@ -17,6 +17,7 @@ export class JoinStatement implements JoinStatementInterface {
     }
 
     attach(object: any): void {
+
         Object.defineProperty(object, this.relation.getObjectName(), {
             value: this.relation.findByObject(object, true),
             enumerable: true
@@ -24,7 +25,7 @@ export class JoinStatement implements JoinStatementInterface {
     }
 
     has(key: string): boolean {
-        return (key === this.relation.getModelName());
+        return (key === this.relation.getPrettyName());
     }
 
     getRelation(): Relation {

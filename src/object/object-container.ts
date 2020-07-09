@@ -14,12 +14,12 @@ export class ObjectContainer {
         this.objects.push(newObject);
     }
 
-    public has(name: string) {
-        for (const object of this.objects) {
-            if (name === object.getModelName()) { return true; }
-        }
-        return false;
-    }
+    // public has(name: string) {
+    //     for (const object of this.objects) {
+    //         if (name === object.getModelName()) { return true; }
+    //     }
+    //     return false;
+    // }
 
     public hasPretty(name: string) {
 
@@ -35,15 +35,15 @@ export class ObjectContainer {
         return this.objects;
     }
 
-    public find(name: string): RdsObject | null {
-
-        // name = name.toLowerCase();
-
-        for (const object of this.objects) {
-            if (name === object.getModelName()) { return object; }
-        }
-        return null;
-    }
+    // public find(name: string): RdsObject | null {
+    //
+    //     // name = name.toLowerCase();
+    //
+    //     for (const object of this.objects) {
+    //         if (name === object.getModelName()) { return object; }
+    //     }
+    //     return null;
+    // }
 
     public findPretty(name: string): RdsObject {
 

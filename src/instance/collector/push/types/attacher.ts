@@ -235,9 +235,9 @@ export class Attacher {
         // Now we can check if the collector has relationObjects for us to attach to this object.
         const local_pk = statement.getRelation().getLocalObject().getPrimaryKey();
         const relation_ids_to_attach = this.collector.find(
-            statement.getRelation().getLocalObject().getModelName(),
+            statement.getRelation().getLocalObject().getPrettyName(),
             object[local_pk],
-            statement.getRelation().getModelName()
+            statement.getRelation().getPrettyName()
         );
 
         if (relation_ids_to_attach.length) {
@@ -340,9 +340,9 @@ export class Attacher {
 
             // We check if the collector has ids for this object.
             const ids_to_attach = this.collector.find(
-                statement.getRelation().getLocalObject().getModelName(),
+                statement.getRelation().getLocalObject().getPrettyName(),
                 object[local_pk],
-                statement.getRelation().getRelationObject().getModelName()
+                statement.getRelation().getRelationObject().getPrettyName()
             );
 
             if (ids_to_attach.length) {

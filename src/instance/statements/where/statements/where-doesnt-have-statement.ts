@@ -10,7 +10,7 @@ export class WhereDoesntHaveStatement implements WhereStatementInterface{
     }
 
     public has(key : string): boolean {
-        return (this.relation.getRelationObject().getModelName() === key);
+        return (this.relation.getRelationObject().getPrettyName() === key);
     }
 
     public hasWhereHas(key?: string): boolean { return false; }
@@ -19,7 +19,7 @@ export class WhereDoesntHaveStatement implements WhereStatementInterface{
 
     public hasWhereDoesntHave(key?: string): boolean {
         if (!key) { return true; }
-        return !!(key === this.relation.getModelName());
+        return !!(key === this.relation.getPrettyName());
     }
 
     public hasWhereDoesntHaveComplicated(key: string): boolean { return false;}

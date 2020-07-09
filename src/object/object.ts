@@ -10,13 +10,15 @@ export class RdsObject {
 
     private pretty_name: string;
 
-    private model_name: string;
+    // private model_name: string; todo disabled until minify / uglify bug investigated
 
     private primary_key: string;
 
     private parent: string;
 
     private data: ObjectData;
+
+    private original_modal: any;
 
     private model_constructor: any;
 
@@ -39,9 +41,8 @@ export class RdsObject {
 
         this.pretty_name = config.name.toLowerCase();
 
-        // const funcNameRegex = /function (.{1,})\(/;
-        // this.model_name = (funcNameRegex).exec(config.model.prototype.constructor.toString())[1].toLowerCase();
-        this.model_name = config.model.name;
+        // todo this can't be trusted atm due to some uglify bugs breaking the names
+        // this.model_name = config.model.name;
 
         // todo check this.
         const parent = Object.getPrototypeOf(config.model.prototype);
@@ -49,6 +50,8 @@ export class RdsObject {
         // this.parent = (funcNameRegex).exec(parent.constructor.toString())[1].toLowerCase();
 
         // this.model_constructor = config.model;
+        this.original_modal = config.model;
+
         this.setModelConstructor(config.model);
 
         this.config = config;
@@ -56,8 +59,8 @@ export class RdsObject {
 
     init(): void {
         let bag = null;
-        if (modelDecoratorBag.has(this.getModelName())) {
-            bag = modelDecoratorBag.get(this.getModelName());
+        if (modelDecoratorBag.has(this.original_modal)) {
+            bag = modelDecoratorBag.get(this.original_modal);
         }
 
         // primary key
@@ -137,7 +140,7 @@ export class RdsObject {
 
         // if there are no relations we can simply add the objects
         if (this.getRelationContainer().isEmpty()) {
-            collector.add(this.getModelName(), objects);
+            collector.add(this.getPrettyName(), objects);
             return this.data.add(objects);
         }
 
@@ -169,7 +172,7 @@ export class RdsObject {
             }
         }
 
-        collector.add(this.getModelName(), objects);
+        collector.add(this.getPrettyName(), objects);
         return this.data.add(objects);
     }
 
@@ -190,7 +193,7 @@ export class RdsObject {
 
         const objects = this.data.update(ids, data);
 
-        collector.update(this.getModelName(), objects);
+        collector.update(this.getPrettyName(), objects);
     }
 
     remove(ids: any, collector: Collector): void {
@@ -200,7 +203,7 @@ export class RdsObject {
 
         // todo relations are not being removed
 
-        collector.remove(this.getModelName(), ids);
+        collector.remove(this.getPrettyName(), ids);
     }
 
 
@@ -208,9 +211,9 @@ export class RdsObject {
         return this.pretty_name;
     }
 
-    getModelName (): string {
-        return this.model_name;
-    }
+    // getModelName (): string { // todo see this.model_name
+    //     return this.model_name;
+    // }
 
     getRelationContainer(): RelationContainer {
         return this.relationContainer;
@@ -325,7 +328,7 @@ export class RdsObject {
                     return;
                 }
 
-                self.rds.update(self.getModelName(), this[pk], data);
+                self.rds.update(self.getPrettyName(), this[pk], data);
             };
 
             remove (): void {
@@ -339,7 +342,7 @@ export class RdsObject {
                     return;
                 }
 
-                self.rds.remove(self.getModelName(), this[pk]);
+                self.rds.remove(self.getPrettyName(), this[pk]);
             };
 
             attach (relation: string, ids?: number | string | number[] | string[]): void {
@@ -357,7 +360,7 @@ export class RdsObject {
                 const ids_array: any = (!Array.isArray(ids)) ? [ids] : ids;
 
                 self.rds.attach(
-                    self.getModelName(),
+                    self.getPrettyName(),
                     relation,
                     [this[pk]],
                     ids_array
@@ -379,7 +382,7 @@ export class RdsObject {
                 const ids_array: any = (!Array.isArray(ids)) ? [ids] : ids;
 
                 self.rds.detach(
-                    self.getModelName(),
+                    self.getPrettyName(),
                     relation,
                     [this[pk]],
                     ids_array
@@ -406,7 +409,7 @@ export class RdsObject {
                 const relation_model_name = self
                     .getRelationContainer()
                     .findByObjectName(relation)
-                    .getModelName();
+                    .getPrettyName();
                 const relation_pk = self
                     .getRelationContainer()
                     .findByObjectName(relation)
@@ -431,7 +434,7 @@ export class RdsObject {
                 }
 
                 self.rds.attach(
-                    self.getModelName(),
+                    self.getPrettyName(),
                     relation,
                     [this[pk]],
                     relation_ids
@@ -472,10 +475,10 @@ export class RdsObject {
                 }
 
                 // we have to set the actual modal name in case of compiling etc
-                config.model_name = this.rds.getObjectContainer().findPretty(config.model_name).getModelName();
+                config.model_name = this.rds.getObjectContainer().findPretty(config.model_name).getPrettyName();
 
                 // add the relation
-                this.relationContainer.add(config, this.getModelName(), this.rds);
+                this.relationContainer.add(config, this.getPrettyName(), this.rds);
             }
         }
 
@@ -485,7 +488,7 @@ export class RdsObject {
             for (const config of instance.getRelations()) {
 
                 // we check if the relation model is defined
-                if (!this.rds.getObjectContainer().has(config.model_name)) {
+                if (!this.rds.getObjectContainer().hasPretty(config.model_name)) {
                     // todo throw error, model not found.
                     continue;
                 }
@@ -495,7 +498,7 @@ export class RdsObject {
                     continue;
                 }
 
-                this.relationContainer.add(config, this.getModelName(), this.rds);
+                this.relationContainer.add(config, this.getPrettyName(), this.rds);
             }
         }
     }

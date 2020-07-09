@@ -63,29 +63,29 @@ export class Rds {
     //todo type
     public add(key: string, objects): void {
         const collector = this.getCollector();
-        this.getObjectContainer().find(key).add(objects, collector);
+        this.getObjectContainer().findPretty(key).add(objects, collector);
         this.pushChecker(collector);
     }
 
     public update(key: string, ids: number | string | number[] | string[], data: any): void {
         const collector = this.getCollector();
-        this.getObjectContainer().find(key).update(ids, data, collector);
+        this.getObjectContainer().findPretty(key).update(ids, data, collector);
         this.pushChecker(collector);
     }
 
     public remove(key: string, ids): void {
         const collector = this.getCollector();
-        this.getObjectContainer().find(key).remove(ids, collector);
+        this.getObjectContainer().findPretty(key).remove(ids, collector);
         this.pushChecker(collector);
     }
 
     public attach(key: string, relation: string, key_ids: string[] | number[], relation_ids: string[] | number[]): void {
         const collector = this.getCollector();
         //todo check if relation exists error?
-        if (!this.getObjectContainer().find(key).getRelationContainer().hasByObjectName(relation)) { return; }
+        if (!this.getObjectContainer().findPretty(key).getRelationContainer().hasByObjectName(relation)) { return; }
 
         this.getObjectContainer()
-            .find(key)
+            .findPretty(key)
             .getRelationContainer()
             .findByObjectName(relation)
             .attach(key_ids, relation_ids, collector);
@@ -96,10 +96,10 @@ export class Rds {
     public detach(key: string, relation: string, key_ids: string[] | number[], relation_ids: string[] | number[]): void {
         const collector = this.getCollector();
         //todo check if relation exists error?
-        if (!this.getObjectContainer().find(key).getRelationContainer().hasByObjectName(relation)) { return; }
+        if (!this.getObjectContainer().findPretty(key).getRelationContainer().hasByObjectName(relation)) { return; }
 
         this.getObjectContainer()
-            .find(key)
+            .findPretty(key)
             .getRelationContainer()
             .findByObjectName(relation)
             .detach(key_ids, relation_ids, collector);

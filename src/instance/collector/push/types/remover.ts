@@ -44,7 +44,7 @@ export class Remover {
     }
 
     private processTarget(): void {
-        const key = this.pushController.getInstanceData().getObject().getModelName();
+        const key = this.pushController.getInstanceData().getObject().getPrettyName();
 
         // if the collector doesn't contain any target data we can skip
         if (!this.collector.has(key)) { return; }
@@ -138,7 +138,7 @@ export class Remover {
     private checkRelationDataArray(objects: any[], statement: JoinStatementInterface): any[] | boolean {
         // todo if something is removed we have to check if a where has is still valid
         // todo or that a where doesn't have became valid.
-        let ids_to_remove = this.collector.find(statement.getRelation().getModelName());
+        let ids_to_remove = this.collector.find(statement.getRelation().getPrettyName());
         let checked = false;
 
         const pk = statement.getRelation().getRelationObject().getPrimaryKey();
@@ -189,7 +189,7 @@ export class Remover {
     }
 
     private checkRelationDataObject(object: any, statement: JoinStatementInterface): any | boolean {
-        let ids_to_remove = this.collector.find(statement.getRelation().getModelName());
+        let ids_to_remove = this.collector.find(statement.getRelation().getPrettyName());
         const pk = statement.getRelation().getRelationObject().getPrimaryKey();
 
         if (ids_to_remove.includes(object[pk])) {

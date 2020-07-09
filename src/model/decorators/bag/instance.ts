@@ -2,7 +2,7 @@ import {RelationConfig} from "../../../object/relation/relation";
 
 export class Instance {
 
-    public name: string;
+    public model: any;
 
     private primary_key: string;
 
@@ -14,8 +14,8 @@ export class Instance {
 
     private model_stamp: string;
 
-    constructor(name: string) {
-        this.name = name;
+    constructor(model: any) {
+        this.model = model;
         this.dates = [];
         this.stringify_objects = [];
         this.relations = [];

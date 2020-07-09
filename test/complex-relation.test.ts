@@ -11,9 +11,7 @@ const ords = new Ords([
     {name: 'project', model: ProjectTest, relations: [
             {name: 'tasks', model_name: 'task', type: 'hasMany'}
         ]},
-    {name: 'task', model: TaskTest, primaryKey: 'task_id', relations: [
-            {name: 'users', model_name: 'user', type: 'hasMany'}
-        ]},
+    {name: 'task', model: TaskTest},
     {name: 'user', model: UserTest, relations: [
             {name: 'address', model_name: 'address', type: 'hasOne'}
         ]},
@@ -204,9 +202,7 @@ const ords2 = new Ords([
     {name: 'project', model: ProjectTest, relations: [
             {name: 'tasks', model_name: 'task', type: 'hasMany'}
         ]},
-    {name: 'task', model: TaskTest, primaryKey: 'task_id', relations: [
-            {name: 'users', model_name: 'user', type: 'hasMany'}
-        ]},
+    {name: 'task', model: TaskTest},
     {name: 'user', model: UserTest}
 ]);
 

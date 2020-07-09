@@ -54,7 +54,7 @@ export class Updater {
     // 5. We include all the original objects that haven't been updated and shouldn't be excluded
     // 6. There might be objects with complicated whereHas or whereDoesntHave statements that will now be INCLUDED.
     private processTarget(): void {
-        const key = this.pushController.getInstanceData().getObject().getModelName();
+        const key = this.pushController.getInstanceData().getObject().getPrettyName();
         let checked = false;
 
         // 1. Get the updated objects
@@ -208,7 +208,7 @@ export class Updater {
     private checkRelationData(object: any, statement: JoinStatementInterface): any | boolean {
         // Get all the objects from the collector here so when there are extensive where statements we only have to
         // filter them once.
-        let objects_to_update = this.collector.find(statement.getRelation().getModelName());
+        let objects_to_update = this.collector.find(statement.getRelation().getPrettyName());
         if (statement.hasWhereStatements()) {
             objects_to_update = statement.getWhereStatementController().filter(objects_to_update);
         }

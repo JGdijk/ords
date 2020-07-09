@@ -12,7 +12,7 @@ export abstract class Relation {
 
     protected local_name: string; // model name
 
-    protected model_name: string;
+    protected pretty_name: string;
 
     protected object_name: string;
 
@@ -29,14 +29,14 @@ export abstract class Relation {
     protected abstract is_silent: boolean;
 
     public constructor(config: RelationConfig, local_name: string, rds: Rds){
-        this.model_name = config.model_name;
+        this.pretty_name = config.model_name;
         this.object_name = config.name;
 
         this.data = new Map();
         this.local_name = local_name;
 
-        this.relationRdsObject = rds.getObjectContainer().find(this.model_name);
-        this.localRdsObject = rds.getObjectContainer().find(this.local_name);
+        this.relationRdsObject = rds.getObjectContainer().findPretty(this.pretty_name); // todo check
+        this.localRdsObject = rds.getObjectContainer().findPretty(this.local_name); // todo check
 
         this.rds = rds;
     }
@@ -94,23 +94,23 @@ export abstract class Relation {
             }
 
             const array: any = [object_id];
-            collector.attach(this.local_name, this.getModelName(), id, array)
+            collector.attach(this.local_name, this.getPrettyName(), id, array)
         }
 
 
     }
 
     public findByObject(object: any, create_models: boolean = false): any | any[] {
-        return this.find(object[this.rds.getObjectContainer().find(this.local_name).getPrimaryKey()], create_models);
+        return this.find(object[this.rds.getObjectContainer().findPretty(this.local_name).getPrimaryKey()], create_models);
     }
 
     public find(id: number | string, create_models: boolean = false): any | any[] {
-        const ids = (this.returns_many)
+        const ids = (this.returnsMany())
             ? this.data.get(id)
             : [this.data.get(id)];
 
         if ((!this.returnsMany() && !ids) || (this.returnsMany() && (!ids || !ids.length))) {
-            return (this.returns_many)
+            return (this.returnsMany())
                 ? []
                 : null;
         }
@@ -122,6 +122,7 @@ export abstract class Relation {
                 ? (objects.length) ? objects : []
                 : (objects.length) ? objects[0] : null;
         }
+
 
         let models = [];
         for (const obj of objects) {
@@ -186,7 +187,7 @@ export abstract class Relation {
                 }
             }
 
-            collector.attach(this.local_name, this.getModelName(), object_id, corrected_relation_ids);
+            collector.attach(this.local_name, this.getPrettyName(), object_id, corrected_relation_ids);
 
             // todo check if actually something was updated
             if (!this.relationRdsObject.getRelationContainer().hasByModelName(this.local_name)) { continue; }
@@ -245,7 +246,7 @@ export abstract class Relation {
                 relation_ids = wildcard_relation_ids;
             }
 
-            collector.detach(this.local_name, this.getModelName(), object_id, relation_ids);
+            collector.detach(this.local_name, this.getPrettyName(), object_id, relation_ids);
 
             // todo check if actually something was updated
             if (!this.relationRdsObject.getRelationContainer().hasByModelName(this.local_name)) { continue; }
@@ -272,7 +273,7 @@ export abstract class Relation {
             }
 
             const array: any = [object_id];
-            collector.detach(this.local_name, this.getModelName(), local_id, array);
+            collector.detach(this.local_name, this.getPrettyName(), local_id, array);
         }
     }
 
@@ -280,8 +281,8 @@ export abstract class Relation {
         return this.object_name;
     }
 
-    public getModelName(): string {
-        return this.model_name;
+    public getPrettyName(): string {
+        return this.pretty_name;
     }
 
     public returnsMany(): boolean {

@@ -18,7 +18,7 @@ export class WhereDoesntHaveStatementCallbackStatement implements WhereStatement
     }
 
     public has(key: string): boolean {
-        if (this.relation.getModelName() === key) { return true; }
+        if (this.relation.getPrettyName() === key) { return true; }
         return !!(this.getWhereStatementController().has(key));
     }
 
@@ -32,12 +32,12 @@ export class WhereDoesntHaveStatementCallbackStatement implements WhereStatement
 
     public hasWhereDoesntHave(key?: string): boolean {
         if (!key) { return true; }
-        if (key === this.relation.getModelName()) { return true; }
+        if (key === this.relation.getPrettyName()) { return true; }
         return this.whereStatementController.has(key);
     }
 
     public hasWhereDoesntHaveComplicated(key: string): boolean {
-        if (key === this.relation.getModelName()) { return true; }
+        if (key === this.relation.getPrettyName()) { return true; }
         return this.whereStatementController.has(key);
     }
 

@@ -90,7 +90,7 @@ export class InstanceData {
     }
 
     public has(key: string): boolean {
-        if (this.getObject().getModelName() === key) { return true; }
+        if (this.getObject().getPrettyName() === key) { return true; }
         if (this.whereStatementController.has(key)) { return true; }
         return (this.joinStatementController.has(key));
     }

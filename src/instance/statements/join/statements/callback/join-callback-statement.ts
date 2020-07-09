@@ -32,7 +32,7 @@ export class JoinCallbackStatement implements JoinStatementInterface {
         if ((!this.relation.returnsMany() && !relation_objects) || (this.relation.returnsMany() && !relation_objects.length)) {
             Object.defineProperty(object, this.relation.getObjectName(), {
                 value: relation_objects,
-                enumerable: this.relation.returnsMany()
+                enumerable: true
             })
             return;
         }
@@ -42,7 +42,7 @@ export class JoinCallbackStatement implements JoinStatementInterface {
             if (this.whereStatementController.has() && !this.getWhereStatementController().check(relation_objects)) {
                 Object.defineProperty(object, this.relation.getObjectName(), {
                     value: null,
-                    enumerable: this.relation.returnsMany()
+                    enumerable: true
                 })
                 return;
             }
@@ -80,7 +80,7 @@ export class JoinCallbackStatement implements JoinStatementInterface {
 
             Object.defineProperty(object, this.relation.getObjectName(), {
                 value: models,
-                enumerable: this.relation.returnsMany()
+                enumerable: true
             })
 
             return;
@@ -88,7 +88,7 @@ export class JoinCallbackStatement implements JoinStatementInterface {
     }
 
     public has(key: string): boolean {
-        if (key === this.getRelation().getModelName()) { return true; }
+        if (key === this.getRelation().getPrettyName()) { return true; }
         if (this.getJoinStatementController().has(key)) { return true; }
         return !!(this.getWhereStatementController().has(key));
     }

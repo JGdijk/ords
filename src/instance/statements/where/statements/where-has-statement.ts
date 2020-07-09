@@ -24,12 +24,12 @@ export class WhereHasStatement implements WhereStatementInterface {
     }
 
     public has(key : string): boolean {
-        return (this.relation.getRelationObject().getModelName() === key);
+        return (this.relation.getRelationObject().getPrettyName() === key);
     }
 
     public hasWhereHas(key?: string): boolean {
         if (!key) { return true; }
-        return !!(key === this.relation.getModelName());
+        return !!(key === this.relation.getPrettyName());
     }
 
     public hasWhereHasComplicated(key: string) { return false; }
