@@ -70,7 +70,9 @@ export abstract class Relation {
             if (!this.data.has(local_id)) {
                 this.data.set(local_id, relation_ids);
             } else {
-                const new_array: number[] | string[] = [...this.data.get(local_id), ...relation_ids];
+                const old_array = this.data.get(local_id);
+                const new_relation_ids = relation_ids.filter((id) => !old_array.includes(id));
+                const new_array: number[] | string[] = [...old_array, ...new_relation_ids];
                 this.data.set(local_id, new_array);
             }
         }
@@ -88,8 +90,11 @@ export abstract class Relation {
                 if (!this.data.has(id)) {
                     this.data.set(id, [object_id])
                 } else {
-                    const new_array = [object_id, ...this.data.get(id)];
-                    this.data.set(object_id, new_array);
+                    const old_array = this.data.get(id);
+                    if (!old_array.includes(object_id)) {
+                        const new_array = [object_id, ...this.data.get(id)];
+                        this.data.set(id, new_array);
+                    }
                 }
             }
 

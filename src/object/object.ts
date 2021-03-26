@@ -166,7 +166,6 @@ export class RdsObject {
                     relation.add(object[this.primary_key], relation_object, collector);
                 }
 
-
                 // remove the relation from the object.
                 delete object[key];
             }
