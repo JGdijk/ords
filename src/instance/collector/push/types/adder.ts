@@ -80,8 +80,16 @@ export class Adder {
         }
 
         // add the objects
-        var new_data = this.pushController.getData();
-        for (const object of new_models) {
+        let new_data = this.pushController.getData();
+
+        const primary_key = this.pushController.getInstanceData().getObject().getPrimaryKey();
+
+        newModelLoop: for (const object of new_models) {
+            for (const new_data_object of new_data) {
+                if (new_data_object[primary_key] === object[primary_key]) {
+                    continue newModelLoop;
+                }
+            }
             new_data.push(object);
         }
 
